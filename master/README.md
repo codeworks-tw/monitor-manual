@@ -1,5 +1,3 @@
-> This dir contains the docker-compose configuration for running `prometheus` and `grafana` as the monitor master.
-
 ## Steps to run
 
 ### 1. Install `docker` and `docker-compose`
