@@ -16,9 +16,9 @@ services:
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.0
     container_name: monitor_cadvisor
-    build:
-      context: ./
-      dockerfile: docker/cadvisor.Dockerfile
+    # build:
+    #   context: ./
+    #  dockerfile: docker/cadvisor.Dockerfile
     restart: always
     # command: ["--enable_load_reader=true", "--container_hints=/etc/cadvisor/container_hints.json", "--v=4", "--stderrthreshold=0", "--log_dir=/var/log", "--logtostderr=false", "--alsologtostderr=false"]
     volumes:
@@ -37,7 +37,7 @@ services:
     #  - 9100:9100
 
   nginx:
-    container_name: monitoring_nginx
+    container_name: monitor_nginx
     image: nginx
     ports:
       - "8080:80"
