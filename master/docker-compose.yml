@@ -4,7 +4,6 @@ services:
   prometheus:
     image: prom/prometheus:v2.30.3
     container_name: prometheus
-    # user: "$UID:$GID"
     user: root
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
@@ -19,15 +18,16 @@ services:
   grafana:
     image: grafana/grafana:11.0.9
     container_name: grafana
-    # user: "$UID:$GID"
     user: root
     depends_on:
       - renderer
       - prometheus
     volumes:
+      - ./grafana-plugin/mahendrapaipuri-dashboardreporter-app:/var/lib/grafana/plugins/mahendrapaipuri-dashboardreporter-app
       - ./data/grafana:/var/lib/grafana
       - ./config/grafana/provisioning:/etc/grafana/provisioning/
       #- ./config/grafana.ini:/etc/grafana/grafana.ini
+      - ./:/root/mahendrapaipuri-dashboardreporter-app
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=Betawu@21_
@@ -36,16 +36,28 @@ services:
       - GF_RENDERING_SERVER_URL=http://renderer:8081/render
       - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
       - GF_LOG_FILTERS=rendering:debug
+      # --- configurations for reporter start ---
+      - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-accessControlOnCall,idForwarding,externalServiceAccounts}
+      - GF_AUTH_MANAGED_SERVICE_ACCOUNTS_ENABLED=${GF_AUTH_MANAGED_SERVICE_ACCOUNTS_ENABLED:-true}
+      # disable alerting because it vomits logs
+      - GF_ALERTING_ENABLED=false
+      - GF_UNIFIED_ALERTING_ENABLED=false
+      - "GF_LOG_FILTERS=rendering:debug plugin.mahendrapaipuri-dashboardreporter-app:debug"
+      # --- configurations for reporter end ---
     ports:
       - 8083:3000
     restart: always
   renderer:
-    user: root
     container_name: renderer
     image: grafana/grafana-image-renderer:latest
     ports:
       - 8081:8081
     restart: always
+  chrome:
+    image: chromedp/headless-shell:latest
+    shm_size: 2G
+    init: true
+    network_mode: service:grafana
   # nginx:
   #   container_name: nginx
   #   image: nginx:1.21.3
