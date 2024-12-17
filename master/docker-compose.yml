@@ -25,7 +25,8 @@ services:
     volumes:
       - ./grafana-plugin/mahendrapaipuri-dashboardreporter-app:/var/lib/grafana/plugins/mahendrapaipuri-dashboardreporter-app
       - ./data/grafana:/var/lib/grafana
-      - ./config/grafana/provisioning:/etc/grafana/provisioning/
+      # - grafana-provisioning:/etc/grafana/provisoning
+      - ./config/grafana/provisioning:/etc/grafana/provisioning
       #- ./config/grafana.ini:/etc/grafana/grafana.ini
       - ./:/root/mahendrapaipuri-dashboardreporter-app
     environment:
@@ -42,6 +43,7 @@ services:
       # disable alerting because it vomits logs
       - GF_ALERTING_ENABLED=false
       - GF_UNIFIED_ALERTING_ENABLED=false
+      - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=mahendrapaipuri-dashboardreporter-app
       - "GF_LOG_FILTERS=rendering:debug plugin.mahendrapaipuri-dashboardreporter-app:debug"
       # --- configurations for reporter end ---
     ports:
