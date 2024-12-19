@@ -8,10 +8,9 @@ services:
     command:
       - '--path.rootfs=/host'
     volumes:
-      # - '/:/host:ro,rslave'
+      - /:/host:ro,rslave
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
-      - /:/rootfs:ro
     
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:v0.47.0

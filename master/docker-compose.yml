@@ -13,7 +13,7 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.enable-admin-api'
     ports:
-      - 8082:9090
+      - 9090:9090
     restart: always
   grafana:
     image: grafana/grafana:11.0.9
@@ -25,9 +25,8 @@ services:
     volumes:
       - ./grafana-plugin/mahendrapaipuri-dashboardreporter-app:/var/lib/grafana/plugins/mahendrapaipuri-dashboardreporter-app
       - ./data/grafana:/var/lib/grafana
-      # - grafana-provisioning:/etc/grafana/provisoning
       - ./config/grafana/provisioning:/etc/grafana/provisioning
-      #- ./config/grafana.ini:/etc/grafana/grafana.ini
+      # - ./config/grafana.ini:/etc/grafana/grafana.ini
       - ./:/root/mahendrapaipuri-dashboardreporter-app
     environment:
       - GF_SECURITY_ADMIN_USER=admin
@@ -41,25 +40,37 @@ services:
       - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-accessControlOnCall,idForwarding,externalServiceAccounts}
       - GF_AUTH_MANAGED_SERVICE_ACCOUNTS_ENABLED=${GF_AUTH_MANAGED_SERVICE_ACCOUNTS_ENABLED:-true}
       # disable alerting because it vomits logs
-      - GF_ALERTING_ENABLED=false
-      - GF_UNIFIED_ALERTING_ENABLED=false
+      # - GF_ALERTING_ENABLED=false
+      # - GF_UNIFIED_ALERTING_ENABLED=false
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=mahendrapaipuri-dashboardreporter-app
       - "GF_LOG_FILTERS=rendering:debug plugin.mahendrapaipuri-dashboardreporter-app:debug"
       # --- configurations for reporter end ---
     ports:
-      - 8083:3000
+      - 3000:3000
     restart: always
   renderer:
-    container_name: renderer
     image: grafana/grafana-image-renderer:latest
+    container_name: renderer
+    environment:
+      # Recommendation of grafana-image-renderer for optimal performance
+      # https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/#configuration
+      - RENDERING_MODE=clustered
+      - RENDERING_CLUSTERING_MODE=browser
+      - RENDERING_CLUSTERING_MAX_CONCURRENCY=5
+      - RENDERING_CLUSTERING_TIMEOUT=60
+      - IGNORE_HTTPS_ERRORS=trueFF
     ports:
       - 8081:8081
     restart: always
   chrome:
+    # 9222 port will be exposed automatically, remember to set it in the report plugin config page as ws://localhost:9222
     image: chromedp/headless-shell:latest
+    container_name: chrome
     shm_size: 2G
     init: true
     network_mode: service:grafana
+    
+  # TBD: set up htdpasswd by nginx
   # nginx:
   #   container_name: nginx
   #   image: nginx:1.21.3
@@ -69,6 +80,6 @@ services:
   #     - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
   #   restart: always
 networks:
-  default:
-    external:
-      name: monitor-network
+  default:    
+    name: monitor-network
+    external: true
