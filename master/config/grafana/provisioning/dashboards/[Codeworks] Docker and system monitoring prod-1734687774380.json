@@ -23,109 +23,12 @@
   "links": [],
   "panels": [
     {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "ae76a2262jym8d"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 0,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 1,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "auto",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "fieldMinMax": false,
-          "mappings": [],
-          "noValue": "CODEWORKS",
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 2,
-        "w": 24,
-        "x": 0,
-        "y": 0
-      },
-      "id": 44,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": false
-        },
-        "tooltip": {
-          "maxHeight": 600,
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "ae76a2262jym8d"
-          },
-          "editorMode": "code",
-          "expr": "",
-          "instant": false,
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "type": "timeseries"
-    },
-    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 2
+        "y": 0
       },
       "id": 43,
       "panels": [],
@@ -224,7 +127,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 3
+        "y": 1
       },
       "id": 33,
       "options": {
@@ -410,7 +313,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 11
+        "y": 9
       },
       "id": 34,
       "options": {
@@ -539,7 +442,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 17
       },
       "id": 35,
       "options": {
@@ -626,8 +529,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -671,7 +573,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 27
+        "y": 25
       },
       "id": 41,
       "options": {
@@ -768,8 +670,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -813,7 +714,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 35
+        "y": 33
       },
       "id": 19,
       "options": {
@@ -869,7 +770,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 43
+        "y": 41
       },
       "id": 42,
       "panels": [],
@@ -898,8 +799,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -915,7 +815,7 @@
         "h": 5,
         "w": 24,
         "x": 0,
-        "y": 44
+        "y": 42
       },
       "id": 31,
       "maxDataPoints": 100,
@@ -1000,8 +900,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1017,7 +916,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 49
+        "y": 47
       },
       "id": 9,
       "options": {
@@ -1100,8 +999,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1117,7 +1015,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 58
+        "y": 56
       },
       "id": 39,
       "options": {
@@ -1200,8 +1098,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1217,7 +1114,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 67
+        "y": 65
       },
       "id": 40,
       "options": {
@@ -1300,8 +1197,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1317,7 +1213,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 75
+        "y": 73
       },
       "id": 8,
       "options": {
@@ -1398,8 +1294,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1415,7 +1310,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 84
+        "y": 82
       },
       "id": 36,
       "options": {
@@ -1609,7 +1504,7 @@
     ]
   },
   "time": {
-    "from": "now-15m",
+    "from": "now-3h",
     "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
@@ -1641,6 +1536,6 @@
   "timezone": "browser",
   "title": "[Codeworks] Docker and system monitoring prod",
   "uid": "fe79o7gw9h5oga",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }
