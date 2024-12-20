@@ -1,0 +1,1 @@
+{"apiVersion":1,"contactPoints":[{"orgId":1,"name":"LINE Notify Test","receivers":[{"uid":"ae79geuvci7sxe","type":"LINE","settings":{"description":"{{template \"default.message\" .}}","title":"{{template \"default.title\" .}}","token":"xQw4NeUrsZitvMeBHhXTO6uKJsz9OWosqCdI6YZWL6h"},"disableResolveMessage":false}]}]}

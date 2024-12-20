@@ -46,6 +46,6 @@ services:
     restart: always
 
 networks:
-  default:
-    external:
-      name: monitor-network
+  default:    
+    name: monitor-network
+    external: true

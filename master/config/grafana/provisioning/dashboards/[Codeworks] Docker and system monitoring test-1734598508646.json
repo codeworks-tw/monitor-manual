@@ -20,7 +20,6 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 893,
   "graphTooltip": 1,
-  "id": 4,
   "links": [],
   "panels": [
     {
@@ -784,7 +783,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1025,8 +1025,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "[Codeworks] Docker and system monitoring",
+  "title": "[Codeworks] Docker and system monitoring test",
   "uid": "fe76b0w13oge8d",
-  "version": 9,
+  "version": 2,
   "weekStart": ""
 }
