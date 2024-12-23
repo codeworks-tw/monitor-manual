@@ -25,6 +25,10 @@ scrape_configs:
         labels:
           group: 'test-dev'
           source: 'node'
+      - targets: ['54.178.95.247:8080']
+        labels:
+          group: 'test-dev-2'
+          source: 'node'
   - job_name: 'docker-status'
     basic_auth:
       username: test
@@ -36,4 +40,8 @@ scrape_configs:
       - targets: ['54.150.247.132:8080']
         labels:
           group: 'test-dev'
+          source: 'docker'
+      - targets: ['54.178.95.247:8080']
+        labels:
+          group: 'test-dev-2'
           source: 'docker'

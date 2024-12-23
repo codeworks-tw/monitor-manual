@@ -1,0 +1,14 @@
+datasources:
+
+  # <string> an unique provider name. Required
+  - name: "prometheus-df"
+    type: "prometheus"
+    access: "proxy"
+    url: "http://prometheus:9090/"
+    user: ""
+    database: ""
+    basicAuth: "false"
+    isDefault: "false"
+    readOnly: "false"
+    jsonData:
+        encrypt: "false"
