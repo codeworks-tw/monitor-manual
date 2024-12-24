@@ -1,1 +1,424 @@
-{"apiVersion":1,"groups":[{"orgId":1,"name":"General[1m]","folder":"Provisioned","interval":"1m","rules":[{"uid":"ae7dn9959qpdsf","title":"High Memory Usage","condition":"C","data":[{"refId":"A","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"fe76a6ym7cdtsc","model":{"datasource":{"type":"prometheus","uid":"fe76a6ym7cdtsc"},"editorMode":"code","expr":"100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))","instant":true,"intervalMs":1000,"legendFormat":"__auto","maxDataPoints":43200,"range":false,"refId":"A"}},{"refId":"C","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"__expr__","model":{"conditions":[{"evaluator":{"params":[80],"type":"gt"},"operator":{"type":"and"},"query":{"params":["C"]},"reducer":{"params":[],"type":"last"},"type":"query"}],"datasource":{"type":"__expr__","uid":"__expr__"},"expression":"A","intervalMs":1000,"maxDataPoints":43200,"refId":"C","type":"threshold"}}],"noDataState":"NoData","execErrState":"Error","for":"5m","annotations":{"summary":"Threshold 80%"},"labels":{},"isPaused":false,"notification_settings":{"receiver":"LINE Notify Test"}},{"uid":"be7dnabaif4sgf","title":"High CPU Usage","condition":"B","data":[{"refId":"A","relativeTimeRange":{"from":300,"to":0},"datasourceUid":"fe76a6ym7cdtsc","model":{"datasource":{"type":"prometheus","uid":"fe76a6ym7cdtsc"},"editorMode":"code","expr":"100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)","instant":true,"intervalMs":1000,"legendFormat":"__auto","maxDataPoints":43200,"range":false,"refId":"A"}},{"refId":"B","relativeTimeRange":{"from":300,"to":0},"datasourceUid":"__expr__","model":{"conditions":[{"evaluator":{"params":[80,0],"type":"gt"},"operator":{"type":"and"},"query":{"params":[]},"reducer":{"params":[],"type":"avg"},"type":"query"}],"datasource":{"name":"Expression","type":"__expr__","uid":"__expr__"},"expression":"A","intervalMs":1000,"maxDataPoints":43200,"refId":"B","type":"threshold"}}],"noDataState":"NoData","execErrState":"Error","for":"5m","annotations":{"summary":"Threshold 80%"},"labels":{},"isPaused":false,"notification_settings":{"receiver":"LINE Notify Test"}},{"uid":"be7dopqdd0cg0f","title":"High Disk Usage","condition":"C","data":[{"refId":"A","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"fe76a6ym7cdtsc","model":{"datasource":{"type":"prometheus","uid":"fe76a6ym7cdtsc"},"editorMode":"code","expr":"100 * (node_filesystem_size_bytes{mountpoint=\"/\"} - node_filesystem_free_bytes{mountpoint=\"/\"}) / node_filesystem_size_bytes{mountpoint=\"/\"}","instant":true,"intervalMs":1000,"legendFormat":"__auto","maxDataPoints":43200,"range":false,"refId":"A"}},{"refId":"C","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"__expr__","model":{"conditions":[{"evaluator":{"params":[80],"type":"gt"},"operator":{"type":"and"},"query":{"params":["C"]},"reducer":{"params":[],"type":"last"},"type":"query"}],"datasource":{"type":"__expr__","uid":"__expr__"},"expression":"A","intervalMs":1000,"maxDataPoints":43200,"refId":"C","type":"threshold"}}],"noDataState":"NoData","execErrState":"Error","for":"5m","annotations":{"summary":"Threshold 80%"},"labels":{},"isPaused":false,"notification_settings":{"receiver":"LINE Notify Test"}},{"uid":"ae7dow53od24ga","title":"High Memory Usage Test","condition":"C","data":[{"refId":"A","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"fe76a6ym7cdtsc","model":{"datasource":{"type":"prometheus","uid":"fe76a6ym7cdtsc"},"editorMode":"code","expr":"100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))","instant":true,"intervalMs":1000,"legendFormat":"__auto","maxDataPoints":43200,"range":false,"refId":"A"}},{"refId":"C","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"__expr__","model":{"conditions":[{"evaluator":{"params":[60],"type":"gt"},"operator":{"type":"and"},"query":{"params":["C"]},"reducer":{"params":[],"type":"last"},"type":"query"}],"datasource":{"type":"__expr__","uid":"__expr__"},"expression":"A","intervalMs":1000,"maxDataPoints":43200,"refId":"C","type":"threshold"}}],"noDataState":"NoData","execErrState":"Error","for":"1m","annotations":{"summary":"Threshold 50%"},"labels":{},"isPaused":false,"notification_settings":{"receiver":"LINE Notify Test"}},{"uid":"de7dre2detnuob","title":"Container Number","condition":"C","data":[{"refId":"A","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"fe76a6ym7cdtsc","model":{"datasource":{"type":"prometheus","uid":"fe76a6ym7cdtsc"},"editorMode":"code","expr":"count(rate(container_last_seen{name!=\"\"}[1m]))","instant":true,"intervalMs":1000,"legendFormat":"__auto","maxDataPoints":43200,"range":false,"refId":"A"}},{"refId":"C","relativeTimeRange":{"from":600,"to":0},"datasourceUid":"__expr__","model":{"conditions":[{"evaluator":{"params":[4,4],"type":"outside_range"},"operator":{"type":"and"},"query":{"params":["C"]},"reducer":{"params":[],"type":"last"},"type":"query"}],"datasource":{"type":"__expr__","uid":"__expr__"},"expression":"A","intervalMs":1000,"maxDataPoints":43200,"refId":"C","type":"threshold"}}],"noDataState":"NoData","execErrState":"Error","for":"1m","annotations":{"summary":"Threshold 80%"},"labels":{},"isPaused":false,"notification_settings":{"receiver":"LINE Notify Test"}}]}]}
+{
+  "apiVersion": 1,
+  "groups": [
+    {
+      "orgId": 1,
+      "name": "General[1m]",
+      "folder": "Provisioned",
+      "interval": "1m",
+      "rules": [
+        {
+          "uid": "1",
+          "title": "High Memory Usage",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "PB01748D44C4D79F9",
+              "model": {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PB01748D44C4D79F9"
+                },
+                "editorMode": "code",
+                "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        80
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "5m",
+          "annotations": {
+            "summary": "Threshold 80%"
+          },
+          "labels": {},
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "LINE Notify Test"
+          }
+        },
+        {
+          "uid": "2",
+          "title": "High CPU Usage",
+          "condition": "B",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "PB01748D44C4D79F9",
+              "model": {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PB01748D44C4D79F9"
+                },
+                "editorMode": "code",
+                "expr": "100 - (avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])) * 100)",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "B",
+              "relativeTimeRange": {
+                "from": 300,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        80,
+                        0
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": []
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "avg"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "name": "Expression",
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "B",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "5m",
+          "annotations": {
+            "summary": "Threshold 80%"
+          },
+          "labels": {},
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "LINE Notify Test"
+          }
+        },
+        {
+          "uid": "3",
+          "title": "High Disk Usage",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "PB01748D44C4D79F9",
+              "model": {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PB01748D44C4D79F9"
+                },
+                "editorMode": "code",
+                "expr": "100 * (node_filesystem_size_bytes{mountpoint=\"/\"} - node_filesystem_free_bytes{mountpoint=\"/\"}) / node_filesystem_size_bytes{mountpoint=\"/\"}",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        80
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "5m",
+          "annotations": {
+            "summary": "Threshold 80%"
+          },
+          "labels": {},
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "LINE Notify Test"
+          }
+        },
+        {
+          "uid": "4",
+          "title": "High Memory Usage Test",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "PB01748D44C4D79F9",
+              "model": {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PB01748D44C4D79F9"
+                },
+                "editorMode": "code",
+                "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        60
+                      ],
+                      "type": "gt"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "1m",
+          "annotations": {
+            "summary": "Threshold 50%"
+          },
+          "labels": {},
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "LINE Notify Test"
+          }
+        },
+        {
+          "uid": "5",
+          "title": "Container Number",
+          "condition": "C",
+          "data": [
+            {
+              "refId": "A",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "PB01748D44C4D79F9",
+              "model": {
+                "datasource": {
+                  "type": "prometheus",
+                  "uid": "PB01748D44C4D79F9"
+                },
+                "editorMode": "code",
+                "expr": "count(rate(container_last_seen{name!=\"\"}[1m]))",
+                "instant": true,
+                "intervalMs": 1000,
+                "legendFormat": "__auto",
+                "maxDataPoints": 43200,
+                "range": false,
+                "refId": "A"
+              }
+            },
+            {
+              "refId": "C",
+              "relativeTimeRange": {
+                "from": 600,
+                "to": 0
+              },
+              "datasourceUid": "__expr__",
+              "model": {
+                "conditions": [
+                  {
+                    "evaluator": {
+                      "params": [
+                        4,
+                        4
+                      ],
+                      "type": "outside_range"
+                    },
+                    "operator": {
+                      "type": "and"
+                    },
+                    "query": {
+                      "params": [
+                        "C"
+                      ]
+                    },
+                    "reducer": {
+                      "params": [],
+                      "type": "last"
+                    },
+                    "type": "query"
+                  }
+                ],
+                "datasource": {
+                  "type": "__expr__",
+                  "uid": "__expr__"
+                },
+                "expression": "A",
+                "intervalMs": 1000,
+                "maxDataPoints": 43200,
+                "refId": "C",
+                "type": "threshold"
+              }
+            }
+          ],
+          "noDataState": "NoData",
+          "execErrState": "Error",
+          "for": "1m",
+          "annotations": {
+            "summary": "Threshold 80%"
+          },
+          "labels": {},
+          "isPaused": false,
+          "notification_settings": {
+            "receiver": "LINE Notify Test"
+          }
+        }
+      ]
+    }
+  ]
+}

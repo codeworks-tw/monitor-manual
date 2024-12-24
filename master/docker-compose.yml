@@ -23,7 +23,7 @@ services:
       - renderer
       - prometheus
     volumes:
-      - ./grafana-plugin/mahendrapaipuri-dashboardreporter-app:/var/lib/grafana/plugins/mahendrapaipuri-dashboardreporter-app
+      - ./config/grafana/plugins:/var/lib/grafana/plugins
       - ./data/grafana:/var/lib/grafana
       - ./config/grafana/provisioning:/etc/grafana/provisioning
       # - ./config/grafana.ini:/etc/grafana/grafana.ini
