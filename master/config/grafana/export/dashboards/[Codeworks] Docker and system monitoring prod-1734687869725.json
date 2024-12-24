@@ -7,6 +7,14 @@
       "type": "datasource",
       "pluginId": "prometheus",
       "pluginName": "Prometheus"
+    },
+    {
+      "name": "DS_PROMETHEUS",
+      "label": "prometheus",
+      "description": "",
+      "type": "datasource",
+      "pluginId": "prometheus",
+      "pluginName": "Prometheus"
     }
   ],
   "__elements": {},
@@ -228,7 +236,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[$__interval])) * 100)",
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) * 100)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -374,7 +382,7 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
+          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{group=~\"$servergroup\", instance=~\"$instance\"}) by (instance) / sum(node_memory_MemTotal_bytes{group=~\"$servergroup\", instance=~\"$instance\"}) by (instance))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -504,7 +512,7 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "100 * (node_filesystem_size_bytes{mountpoint=\"/\"} - node_filesystem_free_bytes{mountpoint=\"/\"}) / node_filesystem_size_bytes{mountpoint=\"/\"}",
+          "expr": "100 * (sum(node_filesystem_size_bytes{mountpoint=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance) - sum(node_filesystem_free_bytes{mountpoint=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance)) / sum(node_filesystem_size_bytes{mountpoint=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -567,7 +575,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -636,7 +645,7 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "rate(node_disk_read_bytes_total[$__interval])",
+          "expr": "rate(node_disk_read_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
           "intervalFactor": 2,
           "legendFormat": "READ {{instance}}",
           "range": true,
@@ -649,7 +658,7 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "- rate(node_disk_written_bytes_total[$__interval])",
+          "expr": "- rate(node_disk_written_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "WRITE{{instance}}",
@@ -777,7 +786,7 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_receive_bytes_total{id=\"/\"}[$interval])) by (instance)",
+          "expr": "sum(rate(container_network_receive_bytes_total{id=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance)",
           "intervalFactor": 2,
           "legendFormat": "RECEIVED {{instance}}",
           "range": true,
@@ -790,7 +799,7 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "- sum(rate(container_network_transmit_bytes_total{id=\"/\"}[$interval])) by (instance)",
+          "expr": "- sum(rate(container_network_transmit_bytes_total{id=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance)",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "SENT {{instance}}",
@@ -881,7 +890,7 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "count(rate(container_last_seen{name=~\"^monitor.*\", name!=\"\"}[$interval]))",
+          "expr": "count(rate(container_last_seen{name=~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval]))",
           "intervalFactor": 2,
           "range": true,
           "refId": "A",
@@ -979,9 +988,9 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{name=~\"^monitor.*\", name!=\"\"}[$__interval])) by (name) * 100",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name=~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name) * 100",
           "intervalFactor": 2,
-          "legendFormat": "{{name}}",
+          "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
           "step": 240
@@ -1078,9 +1087,9 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "100 * (container_memory_usage_bytes{name=~\"^monitor.*\"} / on(instance) group_left node_memory_MemTotal_bytes)",
+          "expr": "100 * (container_memory_usage_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / on(instance) group_left node_memory_MemTotal_bytes)",
           "intervalFactor": 2,
-          "legendFormat": "{{name}}",
+          "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
           "step": 240
@@ -1177,9 +1186,9 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "100 * container_fs_usage_bytes{name=~\"^monitor.*\"} / container_fs_limit_bytes{name=~\"^monitor.*\"}",
+          "expr": "100 * container_fs_usage_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / container_fs_limit_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
           "intervalFactor": 2,
-          "legendFormat": "{{name}}",
+          "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
           "step": 240
@@ -1274,9 +1283,9 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_receive_bytes_total{name=~\"^monitor.*\"}[$__interval])) by (name)",
+          "expr": "sum(rate(container_network_receive_bytes_total{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name)",
           "intervalFactor": 2,
-          "legendFormat": "{{name}}",
+          "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
           "step": 240
@@ -1371,9 +1380,9 @@
             "uid": "${DS_PROMETHEUS-1}"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"^monitor.*\"}[$interval])) by (name)",
+          "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance, name)",
           "intervalFactor": 2,
-          "legendFormat": "{{name}}",
+          "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
           "step": 240
@@ -1389,20 +1398,47 @@
   "templating": {
     "list": [
       {
-        "allValue": ".+",
+        "allValue": "",
         "current": {},
         "datasource": {
           "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-1}"
+          "uid": "${DS_PROMETHEUS}"
         },
-        "definition": "",
+        "definition": "label_values(group)",
         "hide": 0,
         "includeAll": true,
-        "label": "Container Group",
         "multi": true,
-        "name": "containergroup",
+        "name": "servergroup",
         "options": [],
-        "query": "label_values(container_group)",
+        "query": {
+          "qryType": 1,
+          "query": "label_values(group)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "type": "query"
+      },
+      {
+        "allValue": "",
+        "current": {},
+        "datasource": {
+          "type": "prometheus",
+          "uid": "${DS_PROMETHEUS}"
+        },
+        "definition": "label_values(instance)",
+        "hide": 0,
+        "includeAll": true,
+        "multi": true,
+        "name": "instance",
+        "options": [],
+        "query": {
+          "qryType": 1,
+          "query": "label_values(instance)",
+          "refId": "PrometheusVariableQueryEditor-VariableQuery"
+        },
         "refresh": 1,
         "regex": "",
         "skipUrlSync": false,
@@ -1506,34 +1542,15 @@
           }
         ],
         "query": "30s,1m,2m,3m,5m,7m,10m,30m,1h,6h,12h,1d,7d,14d,30d",
+        "queryValue": "",
         "refresh": 2,
         "skipUrlSync": false,
         "type": "interval"
-      },
-      {
-        "current": {},
-        "datasource": {
-          "type": "prometheus",
-          "uid": "${DS_PROMETHEUS-1}"
-        },
-        "definition": "",
-        "hide": 0,
-        "includeAll": false,
-        "label": "Node",
-        "multi": true,
-        "name": "server",
-        "options": [],
-        "query": "label_values(node_boot_time, instance)",
-        "refresh": 1,
-        "regex": "/([^:]+):.*/",
-        "skipUrlSync": false,
-        "sort": 0,
-        "type": "query"
       }
     ]
   },
   "time": {
-    "from": "now-3h",
+    "from": "now-5m",
     "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
@@ -1564,7 +1581,7 @@
   },
   "timezone": "browser",
   "title": "[Codeworks] Docker and system monitoring prod",
-  "uid": "",
-  "version": 1,
+  "uid": "fe79o7gw9h5oga",
+  "version": 12,
   "weekStart": ""
 }

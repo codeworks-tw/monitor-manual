@@ -21,11 +21,11 @@ scrape_configs:
     metrics_path: "/node/metrics"
     static_configs:
       # could add more targets here
-      - targets: ['54.150.247.132:8080']
+      - targets: ['18.181.251.91:8080']
         labels:
           group: 'test-dev'
           source: 'node'
-      - targets: ['54.178.95.247:8080']
+      - targets: ['43.207.182.148:8080']
         labels:
           group: 'test-dev-2'
           source: 'node'
@@ -37,11 +37,11 @@ scrape_configs:
     metrics_path: "/cadvisor/metrics"
     static_configs:
       # could add more targets here
-      - targets: ['54.150.247.132:8080']
+      - targets: ['18.181.251.91:8080']
         labels:
           group: 'test-dev'
           source: 'docker'
-      - targets: ['54.178.95.247:8080']
+      - targets: ['43.207.182.148:8080']
         labels:
           group: 'test-dev-2'
           source: 'docker'
