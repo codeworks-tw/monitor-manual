@@ -1,7 +1,8 @@
 datasources:
 
   # <string> an unique provider name. Required
-  - name: "prometheus-df"
+  - uid: "PB01748D44C4D79F9"
+    name: "prometheus-df"
     type: "prometheus"
     access: "proxy"
     url: "http://prometheus:9090/"
