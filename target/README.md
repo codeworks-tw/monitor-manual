@@ -14,7 +14,7 @@ vi docker-compose.yml
 
 ### 3. Create the docker `network` defined in file and run `docker-compose`
 ```shell
-docker network create monitor-network
+docker network create monitor-target-network
 docker-compose up -d
 ```
 
