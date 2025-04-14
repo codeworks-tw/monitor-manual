@@ -86,7 +86,7 @@
           "labels": {},
           "isPaused": false,
           "notification_settings": {
-            "receiver": "LINE Notify Test"
+            "receiver": "CW_DC"
           }
         },
         {
@@ -168,7 +168,7 @@
           "labels": {},
           "isPaused": false,
           "notification_settings": {
-            "receiver": "LINE Notify Test"
+            "receiver": "CW_DC"
           }
         },
         {
@@ -250,94 +250,12 @@
           "labels": {},
           "isPaused": false,
           "notification_settings": {
-            "receiver": "LINE Notify Test"
+            "receiver": "CW_DC"
           }
         },
         {
           "uid": "4",
-          "title": "High Memory Usage Test",
-          "condition": "C",
-          "data": [
-            {
-              "refId": "A",
-              "relativeTimeRange": {
-                "from": 600,
-                "to": 0
-              },
-              "datasourceUid": "PB01748D44C4D79F9",
-              "model": {
-                "datasource": {
-                  "type": "prometheus",
-                  "uid": "PB01748D44C4D79F9"
-                },
-                "editorMode": "code",
-                "expr": "100 * (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes))",
-                "instant": true,
-                "intervalMs": 1000,
-                "legendFormat": "__auto",
-                "maxDataPoints": 43200,
-                "range": false,
-                "refId": "A"
-              }
-            },
-            {
-              "refId": "C",
-              "relativeTimeRange": {
-                "from": 600,
-                "to": 0
-              },
-              "datasourceUid": "__expr__",
-              "model": {
-                "conditions": [
-                  {
-                    "evaluator": {
-                      "params": [
-                        60
-                      ],
-                      "type": "gt"
-                    },
-                    "operator": {
-                      "type": "and"
-                    },
-                    "query": {
-                      "params": [
-                        "C"
-                      ]
-                    },
-                    "reducer": {
-                      "params": [],
-                      "type": "last"
-                    },
-                    "type": "query"
-                  }
-                ],
-                "datasource": {
-                  "type": "__expr__",
-                  "uid": "__expr__"
-                },
-                "expression": "A",
-                "intervalMs": 1000,
-                "maxDataPoints": 43200,
-                "refId": "C",
-                "type": "threshold"
-              }
-            }
-          ],
-          "noDataState": "NoData",
-          "execErrState": "Error",
-          "for": "1m",
-          "annotations": {
-            "summary": "Threshold 50%"
-          },
-          "labels": {},
-          "isPaused": false,
-          "notification_settings": {
-            "receiver": "LINE Notify Test"
-          }
-        },
-        {
-          "uid": "5",
-          "title": "Container Number",
+          "title": "Number of Containers (Test)",
           "condition": "C",
           "data": [
             {
@@ -374,8 +292,8 @@
                   {
                     "evaluator": {
                       "params": [
-                        4,
-                        4
+                        0,
+                        10000
                       ],
                       "type": "outside_range"
                     },
@@ -410,12 +328,12 @@
           "execErrState": "Error",
           "for": "1m",
           "annotations": {
-            "summary": "Threshold 80%"
+            "summary": "Threshold 10000 containers"
           },
           "labels": {},
           "isPaused": false,
           "notification_settings": {
-            "receiver": "LINE Notify Test"
+            "receiver": "CW_DC"
           }
         }
       ]

@@ -5,28 +5,37 @@ global:
       monitor: 'monitor'
 
 scrape_configs:
+  # for localhost test
+  # - job_name: "prometheus"
+  #  static_configs:
+  #    - targets: ["localhost:9090"]
+      
+  # - job_name: "grafana"
+  #  static_configs:
+  #    - targets: ["grafana:3000"]
+
   # test-dev
   - job_name: 'node-status'
     basic_auth:
-      username: test
-      password: test
+      username: ${NODE_METRIC_USER}
+      password: ${NODE_METRIC_PASSWD}
     scrape_interval: 5s
     metrics_path: "/node/metrics"
     static_configs:
       # could add more targets here
-      - targets: ['172.31.0.149:8080']
+      - targets: ['0.0.0.0:8080']
         labels:
           group: 'test-dev'
           source: 'node'
   - job_name: 'docker-status'
     basic_auth:
-      username: test
-      password: test
+      username: ${CADVISOR_METRIC_USER}
+      password: ${CADVISOR_METRIC_PASSWD}
     scrape_interval: 5s
     metrics_path: "/cadvisor/metrics"
     static_configs:
       # could add more targets here
-      - targets: ['172.31.0.149:8080']
+      - targets: ['0.0.0.0:8080']
         labels:
           group: 'test-dev'
           source: 'docker'
