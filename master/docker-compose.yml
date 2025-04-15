@@ -12,6 +12,7 @@ services:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
       - '--web.enable-admin-api'
+      - '--storage.tsdb.retention.time=45d'
     ports:
       - 9090:9090
     restart: always
@@ -56,7 +57,7 @@ services:
       # Recommendation of grafana-image-renderer for optimal performance
       # https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/#configuration
       - RENDERING_MODE=clustered
-      - RENDERING_CLUSTERING_MODE=browser
+      - RENDERING_CLUSTERING_MODE=context
       - RENDERING_CLUSTERING_MAX_CONCURRENCY=5
       - RENDERING_CLUSTERING_TIMEOUT=60
       - IGNORE_HTTPS_ERRORS=trueFF
@@ -70,6 +71,7 @@ services:
     shm_size: 2G
     init: true
     network_mode: service:grafana
+    restart: always
     
   # TBD: set up htdpasswd by nginx
   # nginx:

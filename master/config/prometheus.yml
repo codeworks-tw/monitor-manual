@@ -17,41 +17,41 @@ scrape_configs:
   # test-dev
   - job_name: 'node-status'
     basic_auth:
-      username: ${NODE_METRIC_USER}
-      password: ${NODE_METRIC_PASSWD}
+      username: cw
+      password: Cw@1423_
     scrape_interval: 5s
     metrics_path: "/node/metrics"
     static_configs:
       # could add more targets here
-      # - targets: ['localhost:8080']
+      # - targets: ['monitor_nginx:80']
       #   labels:
       #     group: 'local'
       #     source: 'node'
-      - targets: ['13.115.39.35:8080']
+      - targets: ['13.114.226.250:8080']
         labels:
           group: 'test-dev'
           source: 'node'
-      - targets: ['43.207.29.7:8080']
+      - targets: ['43.207.59.71:8080']
         labels:
           group: 'test-dev-2'
           source: 'node'
   - job_name: 'docker-status'
     basic_auth:
-      username: ${CADVISOR_METRIC_USER}
-      password: ${CADVISOR_METRIC_PASSWD}
+      username: cw
+      password: Cw@1423_
     scrape_interval: 5s
     metrics_path: "/cadvisor/metrics"
     static_configs:
       # could add more targets here
-      # - targets: ['localhost:8080']
+      # - targets: ['monitor_nginx:80']
       #   labels:
       #     group: 'local'
       #     source: 'docker'
-      - targets: ['13.115.39.35:8080']
+      - targets: ['13.114.226.250:8080']
         labels:
           group: 'test-dev'
           source: 'docker'
-      - targets: ['43.207.29.7:8080']
+      - targets: ['43.207.59.71:8080']
         labels:
           group: 'test-dev-2'
           source: 'docker'

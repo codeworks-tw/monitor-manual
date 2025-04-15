@@ -20,7 +20,6 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 893,
   "graphTooltip": 1,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -72,7 +71,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -98,7 +97,7 @@
           {
             "matcher": {
               "id": "byName",
-              "options": "{id=\"/\",instance=\"cadvisor:8080\",job=\"prometheus\"}"
+              "options": "Time"
             },
             "properties": [
               {
@@ -118,7 +117,7 @@
             "properties": [
               {
                 "id": "custom.axisPlacement",
-                "value": "hidden"
+                "value": "auto"
               }
             ]
           }
@@ -150,10 +149,12 @@
             "type": "prometheus",
             "uid": "PB01748D44C4D79F9"
           },
+          "editorMode": "code",
           "expr": "sum(rate(container_cpu_system_seconds_total[1m]))",
           "hide": true,
           "intervalFactor": 2,
           "legendFormat": "a",
+          "range": true,
           "refId": "B",
           "step": 120
         },
@@ -258,7 +259,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -304,7 +305,7 @@
             "properties": [
               {
                 "id": "custom.axisPlacement",
-                "value": "hidden"
+                "value": "auto"
               }
             ]
           }
@@ -387,7 +388,7 @@
             "spanNulls": false,
             "stacking": {
               "group": "A",
-              "mode": "normal"
+              "mode": "none"
             },
             "thresholdsStyle": {
               "mode": "off"
@@ -433,7 +434,7 @@
             "properties": [
               {
                 "id": "custom.axisPlacement",
-                "value": "hidden"
+                "value": "auto"
               }
             ]
           }
@@ -530,7 +531,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -564,7 +566,7 @@
             "properties": [
               {
                 "id": "custom.axisPlacement",
-                "value": "hidden"
+                "value": "auto"
               }
             ]
           }
@@ -599,7 +601,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "rate(node_disk_read_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
+          "expr": "sum(rate(node_disk_read_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "intervalFactor": 2,
           "legendFormat": "READ {{instance}}",
           "range": true,
@@ -612,10 +614,10 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "- rate(node_disk_written_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
+          "expr": "-sum(rate(node_disk_written_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "WRITE{{instance}}",
+          "legendFormat": "WRITE {{instance}}",
           "range": true,
           "refId": "B",
           "step": 600
@@ -671,7 +673,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -705,7 +708,7 @@
             "properties": [
               {
                 "id": "custom.axisPlacement",
-                "value": "hidden"
+                "value": "auto"
               }
             ]
           }
@@ -800,7 +803,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -901,7 +905,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -943,11 +948,25 @@
           },
           "editorMode": "code",
           "expr": "sum(rate(container_cpu_usage_seconds_total{name=~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name) * 100",
+          "hide": true,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
           "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name!=\"\", name!~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name) * 100",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{instance}}-{{name}}",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "CPU Usage per Container",
@@ -1000,7 +1019,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1041,12 +1061,27 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
+          "exemplar": false,
           "expr": "100 * (container_memory_usage_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / on(instance) group_left node_memory_MemTotal_bytes)",
+          "hide": true,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
           "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "100 * (\r\n  container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}\r\n  /\r\n  clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}, 1)\r\n)",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "{{instance}}-{{name}}",
+          "range": true,
+          "refId": "B"
         }
       ],
       "title": "Memory Usage per Container",
@@ -1099,7 +1134,151 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 65
+      },
+      "id": 44,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "rate(container_fs_reads_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "READ {{instance}}-{{name}}",
+          "range": true,
+          "refId": "A",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "-rate(container_fs_writes_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
+          "hide": false,
+          "instant": false,
+          "legendFormat": "WRITE {{instance}}-{{name}}",
+          "range": true,
+          "refId": "B"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "exemplar": true,
+          "expr": "container_fs_reads_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
+          "hide": true,
+          "intervalFactor": 2,
+          "legendFormat": "READ EXACT {{instance}}-{{name}}",
+          "range": true,
+          "refId": "C",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "-container_fs_writes_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
+          "hide": true,
+          "instant": false,
+          "legendFormat": "WRITE EXACT {{instance}}-{{name}}",
+          "range": true,
+          "refId": "D"
+        }
+      ],
+      "title": "Disk IO rate per Container",
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PB01748D44C4D79F9"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 2,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1115,7 +1294,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 65
+        "y": 73
       },
       "id": 40,
       "options": {
@@ -1198,7 +1377,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1214,7 +1394,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 73
+        "y": 81
       },
       "id": 8,
       "options": {
@@ -1295,7 +1475,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1311,7 +1492,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 82
+        "y": 90
       },
       "id": 36,
       "options": {
@@ -1346,7 +1527,7 @@
       "type": "timeseries"
     }
   ],
-  "refresh": "30s",
+  "refresh": "",
   "schemaVersion": 39,
   "tags": [],
   "templating": {
@@ -1354,9 +1535,13 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
@@ -1382,9 +1567,13 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
-          "text": "All",
-          "value": "$__all"
+          "selected": true,
+          "text": [
+            "All"
+          ],
+          "value": [
+            "$__all"
+          ]
         },
         "datasource": {
           "type": "prometheus",
@@ -1412,9 +1601,9 @@
         "auto_count": 50,
         "auto_min": "50s",
         "current": {
-          "selected": false,
-          "text": "auto",
-          "value": "$__auto_interval_interval"
+          "selected": true,
+          "text": "30s",
+          "value": "30s"
         },
         "hide": 0,
         "includeAll": false,
@@ -1423,12 +1612,12 @@
         "name": "interval",
         "options": [
           {
-            "selected": true,
+            "selected": false,
             "text": "auto",
             "value": "$__auto_interval_interval"
           },
           {
-            "selected": false,
+            "selected": true,
             "text": "30s",
             "value": "30s"
           },
@@ -1512,8 +1701,8 @@
     ]
   },
   "time": {
-    "from": "now-5m",
-    "to": "now"
+    "from": "2025-04-15T09:19:13.091Z",
+    "to": "2025-04-15T09:20:16.721Z"
   },
   "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
@@ -1544,6 +1733,6 @@
   "timezone": "browser",
   "title": "[Codeworks] Docker and system monitoring",
   "uid": "20241225",
-  "version": 1,
+  "version": 4,
   "weekStart": ""
 }
