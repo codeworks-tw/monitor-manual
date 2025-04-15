@@ -23,10 +23,12 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker/:/var/lib/docker:ro
       # - /dev/disk/:/dev/disk:ro
-    logging:
-      options:
-        max-size: "200m" # Max size of log file before rotation (200MB)
-        max-file: "3" # Keep 3 rotated log files (200MB each)
+
+    # make local logs backup if necessary
+    # logging:
+    #   options:
+    #     max-size: "200m" # Max size of log file before rotation (200MB)
+    #     max-file: "3" # Keep 3 rotated log files (200MB each)
 
   nginx:
     container_name: monitor_nginx
@@ -40,5 +42,5 @@ services:
 
 networks:
   default:    
-    name: monitor-target-network
+    name: monitor-network
     external: false # docker compose will automatically create and manage this network
