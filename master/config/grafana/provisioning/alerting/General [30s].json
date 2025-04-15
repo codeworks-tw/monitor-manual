@@ -354,7 +354,7 @@
                   "uid": "PB01748D44C4D79F9"
                 },
                 "editorMode": "code",
-                "expr": "100 * (\r\n  container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\"}\r\n  /\r\n  clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\"}, 1)\r\n)",
+                "expr": "100 * (\r\n  container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}\r\n  / clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}, 1)\r\n) AND\r\n(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"} > 0)",
                 "instant": true,
                 "intervalMs": 1000,
                 "legendFormat": "__auto",

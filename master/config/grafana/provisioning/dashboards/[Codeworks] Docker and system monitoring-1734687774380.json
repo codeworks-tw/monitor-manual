@@ -20,6 +20,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 893,
   "graphTooltip": 1,
+  "id": 2,
   "links": [],
   "panels": [
     {
@@ -1030,7 +1031,32 @@
           },
           "unit": "percent"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "__systemRef": "hideSeriesFrom",
+            "matcher": {
+              "id": "byNames",
+              "options": {
+                "mode": "exclude",
+                "names": [
+                  "13.114.226.250:8080-mem_stress_container"
+                ],
+                "prefix": "All except:",
+                "readOnly": true
+              }
+            },
+            "properties": [
+              {
+                "id": "custom.hideFrom",
+                "value": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": true
+                }
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 9,
@@ -1076,7 +1102,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "100 * (\r\n  container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}\r\n  /\r\n  clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}, 1)\r\n)",
+          "expr": "100 * (\r\n  container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}\r\n  / clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}, 1)\r\n) AND\r\n(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"} > 0)",
           "hide": false,
           "instant": false,
           "legendFormat": "{{instance}}-{{name}}",
@@ -1601,7 +1627,7 @@
         "auto_count": 50,
         "auto_min": "50s",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": "30s",
           "value": "30s"
         },
@@ -1701,8 +1727,8 @@
     ]
   },
   "time": {
-    "from": "2025-04-15T09:19:13.091Z",
-    "to": "2025-04-15T09:20:16.721Z"
+    "from": "now-30m",
+    "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
@@ -1733,6 +1759,6 @@
   "timezone": "browser",
   "title": "[Codeworks] Docker and system monitoring",
   "uid": "20241225",
-  "version": 4,
+  "version": 2,
   "weekStart": ""
 }
