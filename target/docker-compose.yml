@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   node-exporter: # default port: 9100
     image: prom/node-exporter:v1.2.2

@@ -1,0 +1,7 @@
+# Dockerfile.headless-chrome
+FROM chromedp/headless-shell:latest
+
+# Set shared memory for Chrome to avoid crashes (not always respected in Cloud Run but good practice)
+# Note: shm-size isn't configurable in Dockerfile, it must be set via Docker/Cloud Run config.
+
+EXPOSE 9222

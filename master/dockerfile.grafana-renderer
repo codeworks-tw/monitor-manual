@@ -1,0 +1,12 @@
+# Dockerfile.grafana-renderer
+FROM grafana/grafana-image-renderer:latest
+
+# Optional: Set environment variables directly here (can also be set in Cloud Run)
+ENV RENDERING_MODE=clustered \
+    RENDERING_CLUSTERING_MODE=context \
+    RENDERING_CLUSTERING_MAX_CONCURRENCY=5 \
+    RENDERING_CLUSTERING_TIMEOUT=60 \
+    IGNORE_HTTPS_ERRORS=true
+
+# Cloud Run will use default port 8080 if not specified. This image listens on 8081.
+EXPOSE 8081
