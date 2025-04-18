@@ -1,0 +1,29 @@
+services:
+  renderer:
+    image: grafana/grafana-image-renderer:latest
+    container_name: renderer
+    environment:
+      # Recommendation of grafana-image-renderer for optimal performance
+      # https://grafana.com/docs/grafana/latest/setup-grafana/image-rendering/#configuration
+      - RENDERING_MODE=clustered
+      - RENDERING_CLUSTERING_MODE=context
+      - RENDERING_CLUSTERING_MAX_CONCURRENCY=5
+      - RENDERING_CLUSTERING_TIMEOUT=60
+      - IGNORE_HTTPS_ERRORS=trueFF
+    ports:
+      - 8081:8081
+    restart: always
+  chrome:
+    # 9222 port will be exposed automatically, remember to set it in the report plugin config page as ws://localhost:9222
+    image: chromedp/headless-shell:latest
+    container_name: chrome
+    shm_size: 2G
+    init: true
+    restart: always
+    ports:
+      - 9222:9222
+      
+networks:
+  default:    
+    name: monitor-network
+    external: false # docker compose will automatically create and manage this network

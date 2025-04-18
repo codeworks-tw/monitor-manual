@@ -11,8 +11,9 @@ services:
       - '--storage.tsdb.path=/prometheus'
       - '--web.enable-admin-api'
       - '--storage.tsdb.retention.time=45d'
-    ports:
-      - 9090:9090
+    # ports:
+    #   - 9090:9090
+    network_mode: host
     restart: always
   grafana:
     image: grafana/grafana:11.0.9
@@ -32,23 +33,24 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
 
       # image renderer plugin configurations
-      - GF_RENDERING_SERVER_URL=http://0.0.0.0:8081/render
-      - GF_RENDERING_CALLBACK_URL=http://grafana:3000/
+      - GF_RENDERING_SERVER_URL=http://10.0.0.0:8081/render
+      - GF_RENDERING_CALLBACK_URL=http://10.0.0.0:3000/
       - GF_LOG_FILTERS=rendering:debug
 
       # reporter plugin configurations
       - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-accessControlOnCall,idForwarding,externalServiceAccounts}
-      - GF_AUTH_MANAGED_SERVICE_ACCOUNTS_ENABLED=${GF_AUTH_MANAGED_SERVICE_ACCOUNTS_ENABLED:-true}
+      - GF_AUTH_MANAGED_SERVICE_ACCOUNTS_ENABLED=true
       # disable alerting because it vomits logs
       # - GF_ALERTING_ENABLED=false
       # - GF_UNIFIED_ALERTING_ENABLED=false
       - GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS=mahendrapaipuri-dashboardreporter-app
       - "GF_LOG_FILTERS=rendering:debug plugin.mahendrapaipuri-dashboardreporter-app:debug"
-    ports:
-      - 3000:3000
+    # ports:
+    #   - 3000:3000
+    network_mode: host
     restart: always
 
-networks:
-  default:    
-    name: monitor-network
-    external: false # docker compose will automatically create and manage this network
+# networks:
+#   default:    
+#     name: monitor-network
+#     external: false # docker compose will automatically create and manage this network
