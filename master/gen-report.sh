@@ -1,16 +1,36 @@
 #!/bin/bash
 
-# Variables
+# Function to display usage
+usage() {
+    echo "Usage: $0 --token=<token> --private-ip=<private-ip>"
+    exit 1
+}
+
+# Default Variables
 INSTANCE_NAME="monitor-report-renderer-temp"
 MACHINE_IMAGE="monitor-report-renderer"
 ZONE="asia-east1-c"
 NETWORK="cw-default"
 SUBNET="sub-default"
-PRIVATE_IP=""
 PROJECT="codeworks-457009"
-GRAFANA_TOKEN=""
 OUTPUT_FILE="report1.pdf"
 DASHBOARD_UID="20241225"
+
+# Parse command-line arguments
+while [[ "$#" -gt 0 ]]; do
+    case $1 in
+        --token=*) GRAFANA_TOKEN="${1#*=}" ;;
+        --private-ip=*) PRIVATE_IP="${1#*=}" ;;
+        *) usage ;;  # Display usage if an invalid argument is passed
+    esac
+    shift
+done
+
+# Validate that both token and private IP are provided
+if [[ -z "$GRAFANA_TOKEN" || -z "$PRIVATE_IP" ]]; then
+    echo "Both --token and --private-ip are required. Exiting..."
+    exit 1  # Exit early if either value is not provided
+fi
 
 # Creating temporary compute instance from machine image
 echo "🔧 Creating instance '$INSTANCE_NAME' from machine image..."
