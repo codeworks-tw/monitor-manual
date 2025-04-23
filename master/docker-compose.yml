@@ -70,16 +70,17 @@ services:
     init: true
     network_mode: service:grafana
     restart: always
-    
-  # TBD: set up htdpasswd by nginx
-  # nginx:
-  #   container_name: nginx
-  #   image: nginx:1.21.3
-  #   ports:
-  #     - "80:80"
-  #   volumes:
-  #     - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-  #   restart: always
+  nginx:
+    container_name: nginx
+    image: nginx:1.26.3-alpine
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+      - ./letsencrypt:/etc/letsencrypt
+    network_mode: host
+    restart: always
 networks:
   default:    
     name: monitor-network
