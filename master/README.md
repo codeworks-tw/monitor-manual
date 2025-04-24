@@ -35,7 +35,6 @@ vi docker-compose-renderer.yml
 
 # Full deployment of all services — suitable for local testing or machines with sufficient memory (16G)
 vi docker-compose.yml
-
 ```
 
 ### 2.1 Generate SSL cert (optional)
@@ -56,13 +55,13 @@ certonly \
 ### 3. Grant execution permission for grafana plugin and run `docker-compose ` to start all containers
 ```shell
 # only Grafana and Prometheus
-docker-compose -f docker-compose-light.yml up -d
+docker compose -f docker-compose-light.yml up -d
 
 # only renderer and Chrome
-docker-compose -f docker-compose-renderer.yml up -d
+docker compose -f docker-compose-renderer.yml up -d
 
 # Full deployment
-docker-compose up -d
+docker compose up -d
 ```
 
 ## Trivial Commands
