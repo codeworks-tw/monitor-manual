@@ -849,9 +849,24 @@
           },
           "editorMode": "code",
           "expr": "count(rate(container_last_seen{name=~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval]))",
+          "hide": true,
           "intervalFactor": 2,
+          "legendFormat": "__auto",
           "range": true,
           "refId": "A",
+          "step": 1800
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "count(rate(container_last_seen{name!~\"^monitor_.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval]))",
+          "hide": false,
+          "intervalFactor": 2,
+          "range": true,
+          "refId": "B",
           "step": 1800
         }
       ],
@@ -1277,8 +1292,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",

@@ -1,0 +1,5 @@
+functions-framework==3.*
+google-cloud-compute==1.14.*
+google-cloud-storage==2.14.*
+google-cloud-secret-manager==2.18.*
+requests==2.31.*
