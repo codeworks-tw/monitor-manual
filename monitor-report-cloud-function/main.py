@@ -88,6 +88,7 @@ def generate_report(request):
         report_servergroup = request.args.get("report_servergroup", DEFAULT_SERVERGROUP)
         report_instance = request.args.get("report_instance", DEFAULT_INSTANCE)
         report_interval = request.args.get("report_interval", DEFAULT_INTERVAL)
+        shutdown_instance = request.args.get("shutdown_instance", "true").lower() == "true"
         
         # Get storage and email parameters
         storage_folder = request.args.get("storage_folder", datetime.now().strftime("%Y-%m"))
@@ -133,8 +134,11 @@ def generate_report(request):
             return f'Successfully generated report for dashboard {dashboard_uid}'
             
         finally:
-            # Always delete the VM instance
-            delete_vm_instance(instance_client)
+            # Delete the VM instance only if shutdown_instance is True
+            if shutdown_instance:
+                delete_vm_instance(instance_client)
+            else:
+                print(f"Instance {INSTANCE_NAME} will be kept running as requested")
             
     except requests.exceptions.RequestException as e:
         return f"Error downloading report: {str(e)}", 500

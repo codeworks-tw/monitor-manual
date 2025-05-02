@@ -1,10 +1,47 @@
-## Steps to run monitor host
+# Steps to run monitor host
 
-### 1. Install `Docker` and `Docker Compose`
+This guide will help you set up a monitoring master on your Ubuntu machine using Docker.
+
+## Architecture Diagram
+
+![Monitor Architecture Diagram](monitor-arch-diagram.svg)
+
+The architecture diagram above illustrates the two deployment options and targets of the monitoring system, more details about target could be find in /target folder:
+
+1. Master (Light Deployment) + Report Generator (Renderer Deployment)
+
+    > Recommended for cost optimization - run the report generator on-demand via scripts or cloud functions.
+
+    - **Master (Light Deployment)**
+      - Core monitoring stack with Prometheus and Grafana
+      - Prometheus collects metrics from various targets
+      - Grafana provides visualization and dashboards
+      - Suitable for basic monitoring needs
+    - **Report Generator (Renderer Deployment)**
+      - Specialized deployment for report generation
+      - Includes grafana-image-renderer service
+      - Uses headless Chrome for rendering dashboards
+      - Handles image generation requests
+      - Requires 16GB RAM
+2. Master (Full Deployment)
+
+    > Recommended for local testing and development environments where you need all monitoring and reporting capabilities in a single deployment.
+
+    - **Master (Full Deployment)**
+      - Combines all services from both Light and Renderer deployments
+      - Requires 16GB RAM
+      - Suitable for production environments with high resource availability
+
+- **Targets**
+  - Monitoring endpoints that provide metrics
+  - Includes Node_Exporter for system metrics
+  - CadVisor for container metrics
+  - Additional custom targets can be added
+
 
 ## Prerequisites
 
-### 1. Install Docker and Docker Compose
+### Install `Docker` and `Docker Compose`
 
 Follow the official Docker installation steps for Ubuntu:
 [docker official installation steps](https://docs.docker.com/engine/install/ubuntu)
@@ -76,7 +113,6 @@ certonly \
 
 ## Deployment
 
-### 1. Start Services
 
 Choose the appropriate deployment option:
 
@@ -91,7 +127,7 @@ docker compose -f docker-compose-renderer.yml up -d
 docker compose up -d
 ```
 
-## Common Operations
+# Common Operations
 
 ### 1. Prometheus Management
 

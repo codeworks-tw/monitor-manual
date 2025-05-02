@@ -34,7 +34,7 @@ apps:
 
       # HTTP Client timeout in seconds
       #
-      timeout: 60
+      timeout: 100
 
       # If Grafana is using HTTPS with self signed certificates, set this parameter to true
       # to skip TLS certificate verification.
@@ -104,7 +104,7 @@ apps:
       # ?timeZone=America%2FNew_York during report generation process. Note that we 
       # need to escape URL characters
       #
-      timeZone: ''
+      timeZone: 'Asia/Taipei'
 
       # Time format to use in the report. The format should be provided as the Golang
       # time layout. More details can be found in https://pkg.go.dev/time#Layout.
