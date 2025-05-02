@@ -16,8 +16,20 @@ GCS_BASE_PATH = "monitor-report"
 GRAFANA_BASE_URL = "http://10.139.0.2:3000"
 GRAFANA_REPORT_ENDPOINT = "/api/plugins/mahendrapaipuri-dashboardreporter-app/resources/report"
 
+def instance_exists(instance_client):
+    """Check if the VM instance exists."""
+    try:
+        instance_client.get(project=PROJECT, zone=ZONE, instance=INSTANCE_NAME)
+        return True
+    except Exception:
+        return False
+
 def create_vm_instance(instance_client):
-    """Create a Compute Engine VM instance from a machine image."""
+    """Create a Compute Engine VM instance from a machine image if it doesn't exist."""
+    if instance_exists(instance_client):
+        print(f"Instance {INSTANCE_NAME} already exists, skipping creation.")
+        return
+    
     instance = compute_v1.Instance()
     instance.name = INSTANCE_NAME
     instance.source_machine_image = f"projects/{PROJECT}/global/machineImages/monitor-report-renderer"
@@ -80,8 +92,8 @@ def generate_report(request):
         # Get storage and email parameters
         storage_folder = request.args.get("storage_folder", datetime.now().strftime("%Y-%m"))
         email_receivers = request.args.get("email_receivers", "")
+        email_text_body = request.args.get("email_text_body", "Monthly Monitor Report is ready.")
         email_subject = request.args.get("email_subject", "Monthly Monitor Report")
-        email_text_body = request.args.get("email_text_body", "")
         
         # Get Grafana token
         grafana_token = utils.get_secret_value("grafana-service-account-token")

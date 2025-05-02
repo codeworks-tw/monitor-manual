@@ -1,7 +1,3 @@
-"""
-Configuration settings for the report generation service.
-"""
-
 # VM Instance Configuration
 INSTANCE_NAME = "monitor-report-renderer-temp"
 

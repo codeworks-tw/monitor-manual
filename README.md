@@ -10,3 +10,11 @@
 
 - **`report-cloud-run-function/`**  
   Contains the source code for a Cloud Run function that generates monitoring reports
+
+  # Deploy the monitoring report function to Google Cloud Run
+  ```bash
+  gcloud run deploy monitor-report \
+    --source . \
+    --region asia-east1 \
+    --project=codeworks-457009
+  ```
