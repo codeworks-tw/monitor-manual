@@ -6,6 +6,12 @@ import functions_framework
 import requests
 import time
 import os
+# Google Sheets API
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+import pandas as pd
+import tempfile
+from google.cloud import storage
 
 # Constants
 DEFAULT_INTERVAL = "30s"
@@ -15,6 +21,9 @@ GCS_BUCKET = "cw-general"
 GCS_BASE_PATH = "monitor-report"
 GRAFANA_BASE_URL = "http://10.139.0.2:3000"
 GRAFANA_REPORT_ENDPOINT = "/api/plugins/mahendrapaipuri-dashboardreporter-app/resources/report"
+
+# Initialize the Google Sheets API
+SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
 
 def instance_exists(instance_client):
     """Check if the VM instance exists."""
@@ -62,7 +71,7 @@ def download_report(dashboard_uid, report_from, report_to, report_servergroup,
     response = requests.get(report_url, headers=headers)
     response.raise_for_status()
     
-    file_name = f"report-{dashboard_uid}-from-{report_from}-to-{report_to}-{int(time.time())}.pdf"
+    file_name = f"report-{dashboard_uid}-{int(time.time())}.pdf"
     with open(file_name, "wb") as f:
         f.write(response.content)
     return file_name
@@ -144,3 +153,86 @@ def generate_report(request):
         return f"Error downloading report: {str(e)}", 500
     except Exception as e:
         return f"Error generating report: {str(e)}", 500
+
+@functions_framework.http
+def get_spreadsheet_tab(request):
+    try:
+        # Get parameters from request
+        spreadsheet_id = request.args.get('spreadsheet_id')
+        tab_name = request.args.get('tab_name')
+        file_format = request.args.get('format', 'csv')  # Default to CSV
+        storage_folder = request.args.get('storage_folder', datetime.now().strftime("%Y-%m"))
+        
+        if not spreadsheet_id:
+            return 'No spreadsheet_id provided', 400
+        if not tab_name:
+            return 'No tab_name provided', 400
+            
+        # Get credentials from service account
+        credentials = service_account.Credentials.from_service_account_file(
+            'service-account.json', scopes=SCOPES)
+        
+        # Initialize Sheets API
+        sheets_service = build('sheets', 'v4', credentials=credentials)
+        
+        # Get the values from the specified tab
+        result = sheets_service.spreadsheets().values().get(
+            spreadsheetId=spreadsheet_id,
+            range=f'{tab_name}!A:Z'  # This will get all columns from A to Z
+        ).execute()
+        
+        values = result.get('values', [])
+        
+        if not values:
+            return {
+                'status': 'error',
+                'message': f'No data found in tab "{tab_name}"'
+            }, 404
+            
+        # Convert to DataFrame
+        df = pd.DataFrame(values[1:], columns=values[0])
+        
+        # Create a temporary file based on the requested format
+        with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_format}') as temp_file:
+            if file_format.lower() == 'csv':
+                df.to_csv(temp_file.name, index=False)
+            elif file_format.lower() == 'xlsx':
+                df.to_excel(temp_file.name, index=False)
+            else:
+                return {
+                    'status': 'error',
+                    'message': f'Unsupported file format: {file_format}',
+                    'supported_formats': ['csv', 'xlsx']
+                }, 400
+            
+            # Upload to GCS
+            file_name = f'tab-{tab_name}-{int(time.time())}.{file_format}'
+            utils.upload_to_gcs(
+                bucket_name=GCS_BUCKET,
+                source_file_name=temp_file.name,
+                destination_blob_name=f"{GCS_BASE_PATH}/{storage_folder}/{file_name}"
+            )
+            
+            # Generate signed URL for access (valid for 1 hour)
+            storage_client = storage.Client()
+            bucket = storage_client.bucket(GCS_BUCKET)
+            blob = bucket.blob(f"{GCS_BASE_PATH}/{storage_folder}/{file_name}")
+            url = blob.generate_signed_url(
+                version="v4",
+                expiration=3600,  # 1 hour
+                method="GET"
+            )
+            
+            return {
+                'status': 'success',
+                'file_name': file_name,
+                'file_url': url,
+                'bucket': GCS_BUCKET,
+                'blob_name': f"{GCS_BASE_PATH}/{storage_folder}/{file_name}",
+                'format': file_format,
+                'row_count': len(df),
+                'column_count': len(df.columns)
+            }
+            
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}, 500
