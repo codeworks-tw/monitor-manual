@@ -1,17 +1,20 @@
-from google.cloud import compute_v1
-from datetime import datetime
-from config import INSTANCE_NAME, PROJECT, REGION, ZONE
-import utils
-import functions_framework
-import requests
+# Standard Library Imports
+import json
+import tempfile
 import time
-import os
-# Google Sheets API
+from datetime import datetime
+
+# Third-Party Library Imports
+import pandas as pd
+import requests
+import functions_framework
+from google.cloud import compute_v1, storage
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
-import pandas as pd
-import tempfile
-from google.cloud import storage
+
+# Local Imports
+import utils
+from config import INSTANCE_NAME, PROJECT, REGION, ZONE
 
 # Constants
 DEFAULT_INTERVAL = "30s"
@@ -169,9 +172,10 @@ def get_spreadsheet_tab(request):
             return 'No tab_name provided', 400
             
         # Get credentials from service account
-        credentials = service_account.Credentials.from_service_account_file(
-            'service-account.json', scopes=SCOPES)
-        
+        service_account_json = json.loads(utils.get_secret_value("30508068041-compute-service-account"))
+        credentials = service_account.Credentials.from_service_account_info(
+            service_account_json, scopes=SCOPES)
+            
         # Initialize Sheets API
         sheets_service = build('sheets', 'v4', credentials=credentials)
         
@@ -189,8 +193,28 @@ def get_spreadsheet_tab(request):
                 'message': f'No data found in tab "{tab_name}"'
             }, 404
             
-        # Convert to DataFrame
-        df = pd.DataFrame(values[1:], columns=values[0])
+        # Get the headers and data
+        headers = values[0]  # First row as headers
+        data = values[1:]    # Rest of the data
+
+        # Create a list to store the aligned data
+        aligned_data = []
+
+        # Iterate over each row in the data
+        for row in data:
+            # Create a dictionary to map the data to the headers
+            row_dict = {header: '' for header in headers}  # Initialize with empty strings
+            
+            # Fill in the data for the columns that exist
+            for i, value in enumerate(row):
+                if i < len(headers):  # Ensure we don't exceed the number of headers
+                    row_dict[headers[i]] = value
+            
+            # Append the aligned row to the list
+            aligned_data.append([row_dict[header] for header in headers])
+
+        # Create the DataFrame
+        df = pd.DataFrame(aligned_data, columns=headers)
         
         # Create a temporary file based on the requested format
         with tempfile.NamedTemporaryFile(delete=False, suffix=f'.{file_format}') as temp_file:
@@ -213,20 +237,9 @@ def get_spreadsheet_tab(request):
                 destination_blob_name=f"{GCS_BASE_PATH}/{storage_folder}/{file_name}"
             )
             
-            # Generate signed URL for access (valid for 1 hour)
-            storage_client = storage.Client()
-            bucket = storage_client.bucket(GCS_BUCKET)
-            blob = bucket.blob(f"{GCS_BASE_PATH}/{storage_folder}/{file_name}")
-            url = blob.generate_signed_url(
-                version="v4",
-                expiration=3600,  # 1 hour
-                method="GET"
-            )
-            
             return {
                 'status': 'success',
                 'file_name': file_name,
-                'file_url': url,
                 'bucket': GCS_BUCKET,
                 'blob_name': f"{GCS_BASE_PATH}/{storage_folder}/{file_name}",
                 'format': file_format,

@@ -89,6 +89,10 @@ GET https://monitor-report-30508068041.asia-east1.run.app?
 
 # Deploy the function to Google Cloud Run
   ```bash
+  # ensure latest gcloud is installed, skip this line if already up-to-date
+  gcloud components update
+
+  # deploy current folder to monitor-report cloud run function
   gcloud run deploy monitor-report \
     --source . \
     --region asia-east1 \
