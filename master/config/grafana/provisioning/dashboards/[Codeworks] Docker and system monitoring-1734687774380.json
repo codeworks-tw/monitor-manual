@@ -468,13 +468,13 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "100 * (sum(node_filesystem_size_bytes{mountpoint=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance) - sum(node_filesystem_free_bytes{mountpoint=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance)) / sum(node_filesystem_size_bytes{mountpoint=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance)",
+          "expr": "100 * (sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, mountpoint) - sum(node_filesystem_free_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, mountpoint)) / sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, mountpoint)",
           "format": "time_series",
           "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}",
+          "legendFormat": "{{instance}}-{{mountpoint}}",
           "metric": "",
           "range": true,
           "refId": "C",
@@ -849,24 +849,9 @@
           },
           "editorMode": "code",
           "expr": "count(rate(container_last_seen{name=~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval]))",
-          "hide": true,
           "intervalFactor": 2,
-          "legendFormat": "__auto",
           "range": true,
           "refId": "A",
-          "step": 1800
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "expr": "count(rate(container_last_seen{name!~\"^monitor_.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval]))",
-          "hide": false,
-          "intervalFactor": 2,
-          "range": true,
-          "refId": "B",
           "step": 1800
         }
       ],
@@ -1292,7 +1277,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1334,10 +1320,25 @@
           },
           "editorMode": "code",
           "expr": "100 * container_fs_usage_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / container_fs_limit_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
+          "hide": true,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "100 * container_fs_usage_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / container_fs_limit_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}}-{{name}}",
+          "range": true,
+          "refId": "B",
           "step": 240
         }
       ],
@@ -1391,7 +1392,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1431,10 +1433,25 @@
           },
           "editorMode": "code",
           "expr": "sum(rate(container_network_receive_bytes_total{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name)",
+          "hide": true,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_network_receive_bytes_total{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name)",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}}-{{name}}",
+          "range": true,
+          "refId": "B",
           "step": 240
         }
       ],
@@ -1488,7 +1505,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green"
+                "color": "green",
+                "value": null
               },
               {
                 "color": "red",
@@ -1528,10 +1546,25 @@
           },
           "editorMode": "code",
           "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance, name)",
+          "hide": true,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
           "range": true,
           "refId": "A",
+          "step": 240
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_network_transmit_bytes_total{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance, name)",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}}-{{name}}",
+          "range": true,
+          "refId": "B",
           "step": 240
         }
       ],
@@ -1547,12 +1580,12 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
-            "All"
+            "local"
           ],
           "value": [
-            "$__all"
+            "local"
           ]
         },
         "datasource": {
@@ -1579,7 +1612,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -1713,8 +1746,8 @@
     ]
   },
   "time": {
-    "from": "now-30m",
-    "to": "now"
+    "from": "2025-05-05T15:14:57.987Z",
+    "to": "2025-05-05T16:14:57.987Z"
   },
   "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
@@ -1745,6 +1778,6 @@
   "timezone": "browser",
   "title": "[Codeworks] Docker and system monitoring",
   "uid": "20241225",
-  "version": 1,
+  "version": 2,
   "weekStart": ""
 }
