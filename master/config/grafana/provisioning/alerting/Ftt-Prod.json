@@ -77,15 +77,21 @@
                             }
                         }
                     ],
-                    "dashboardUid": "",
-                    "panelId": 0,
+                    "dashboardUid": "cel9ij7o23ev4a",
+                    "panelId": 34,
                     "noDataState": "NoData",
                     "execErrState": "Error",
                     "for": "2m",
                     "annotations": {
+                        "__dashboardUid__": "cel9ij7o23ev4a",
+                        "__panelId__": "34",
+                        "description": "",
+                        "runbook_url": "",
                         "summary": "Threshold 80%"
                     },
-                    "labels": {},
+                    "labels": {
+                        "": ""
+                    },
                     "isPaused": false,
                     "notification_settings": {
                         "receiver": "CW_DC_PROD"
@@ -161,15 +167,21 @@
                             }
                         }
                     ],
-                    "dashboardUid": "",
-                    "panelId": 0,
+                    "dashboardUid": "cel9ij7o23ev4a",
+                    "panelId": 33,
                     "noDataState": "NoData",
                     "execErrState": "Error",
                     "for": "2m",
                     "annotations": {
+                        "__dashboardUid__": "cel9ij7o23ev4a",
+                        "__panelId__": "33",
+                        "description": "",
+                        "runbook_url": "",
                         "summary": "Threshold 80%"
                     },
-                    "labels": {},
+                    "labels": {
+                        "": ""
+                    },
                     "isPaused": false,
                     "notification_settings": {
                         "receiver": "CW_DC_PROD"
@@ -245,15 +257,21 @@
                             }
                         }
                     ],
-                    "dashboardUid": "",
-                    "panelId": 0,
+                    "dashboardUid": "cel9ij7o23ev4a",
+                    "panelId": 35,
                     "noDataState": "NoData",
                     "execErrState": "Error",
                     "for": "2m",
                     "annotations": {
+                        "__dashboardUid__": "cel9ij7o23ev4a",
+                        "__panelId__": "35",
+                        "description": "",
+                        "runbook_url": "",
                         "summary": "Threshold 80%"
                     },
-                    "labels": {},
+                    "labels": {
+                        "": ""
+                    },
                     "isPaused": false,
                     "notification_settings": {
                         "receiver": "CW_DC_PROD"
@@ -329,15 +347,21 @@
                             }
                         }
                     ],
-                    "dashboardUid": "",
-                    "panelId": 0,
+                    "dashboardUid": "cel9ij7o23ev4a",
+                    "panelId": 39,
                     "noDataState": "NoData",
                     "execErrState": "Error",
                     "for": "2m",
                     "annotations": {
+                        "__dashboardUid__": "cel9ij7o23ev4a",
+                        "__panelId__": "39",
+                        "description": "",
+                        "runbook_url": "",
                         "summary": "Threshold 80%"
                     },
-                    "labels": {},
+                    "labels": {
+                        "": ""
+                    },
                     "isPaused": false,
                     "notification_settings": {
                         "receiver": "CW_DC_PROD"
@@ -413,15 +437,21 @@
                             }
                         }
                     ],
-                    "dashboardUid": "",
-                    "panelId": 0,
+                    "dashboardUid": "cel9ij7o23ev4a",
+                    "panelId": 9,
                     "noDataState": "NoData",
                     "execErrState": "Error",
                     "for": "2m",
                     "annotations": {
+                        "__dashboardUid__": "cel9ij7o23ev4a",
+                        "__panelId__": "9",
+                        "description": "",
+                        "runbook_url": "",
                         "summary": "Threshold 80%"
                     },
-                    "labels": {},
+                    "labels": {
+                        "": ""
+                    },
                     "isPaused": false,
                     "notification_settings": {
                         "receiver": "CW_DC_PROD"
