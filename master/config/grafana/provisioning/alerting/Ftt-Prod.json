@@ -1,0 +1,433 @@
+{
+    "apiVersion": 1,
+    "groups": [
+        {
+            "orgId": 1,
+            "name": "Ftt-Prod",
+            "folder": "Provisioned",
+            "interval": "30s",
+            "rules": [
+                {
+                    "uid": "1",
+                    "title": "High Memory Usage",
+                    "condition": "C",
+                    "data": [
+                        {
+                            "refId": "A",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "PB01748D44C4D79F9",
+                            "model": {
+                                "datasource": {
+                                    "type": "prometheus",
+                                    "uid": "PB01748D44C4D79F9"
+                                },
+                                "editorMode": "code",
+                                "expr": "100 * (1 - (node_memory_MemAvailable_bytes{group='prd'} / node_memory_MemTotal_bytes{group='prd'}))",
+                                "instant": true,
+                                "intervalMs": 1000,
+                                "legendFormat": "__auto",
+                                "maxDataPoints": 43200,
+                                "range": false,
+                                "refId": "A"
+                            }
+                        },
+                        {
+                            "refId": "C",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "__expr__",
+                            "model": {
+                                "conditions": [
+                                    {
+                                        "evaluator": {
+                                            "params": [
+                                                80
+                                            ],
+                                            "type": "gt"
+                                        },
+                                        "operator": {
+                                            "type": "and"
+                                        },
+                                        "query": {
+                                            "params": [
+                                                "C"
+                                            ]
+                                        },
+                                        "reducer": {
+                                            "params": [],
+                                            "type": "last"
+                                        },
+                                        "type": "query"
+                                    }
+                                ],
+                                "datasource": {
+                                    "type": "__expr__",
+                                    "uid": "__expr__"
+                                },
+                                "expression": "A",
+                                "intervalMs": 1000,
+                                "maxDataPoints": 43200,
+                                "refId": "C",
+                                "type": "threshold"
+                            }
+                        }
+                    ],
+                    "dashboardUid": "",
+                    "panelId": 0,
+                    "noDataState": "NoData",
+                    "execErrState": "Error",
+                    "for": "2m",
+                    "annotations": {
+                        "summary": "Threshold 80%"
+                    },
+                    "labels": {},
+                    "isPaused": false,
+                    "notification_settings": {
+                        "receiver": "CW_DC_PROD"
+                    }
+                },
+                {
+                    "uid": "2",
+                    "title": "High CPU Usage",
+                    "condition": "B",
+                    "data": [
+                        {
+                            "refId": "A",
+                            "relativeTimeRange": {
+                                "from": 300,
+                                "to": 0
+                            },
+                            "datasourceUid": "PB01748D44C4D79F9",
+                            "model": {
+                                "datasource": {
+                                    "type": "prometheus",
+                                    "uid": "PB01748D44C4D79F9"
+                                },
+                                "editorMode": "code",
+                                "expr": "100 - (avg by(group) (rate(node_cpu_seconds_total{mode='idle', group='prd'}[30s])) * 100)",
+                                "instant": true,
+                                "intervalMs": 1000,
+                                "legendFormat": "__auto",
+                                "maxDataPoints": 43200,
+                                "range": false,
+                                "refId": "A"
+                            }
+                        },
+                        {
+                            "refId": "B",
+                            "relativeTimeRange": {
+                                "from": 300,
+                                "to": 0
+                            },
+                            "datasourceUid": "__expr__",
+                            "model": {
+                                "conditions": [
+                                    {
+                                        "evaluator": {
+                                            "params": [
+                                                80,
+                                                0
+                                            ],
+                                            "type": "gt"
+                                        },
+                                        "operator": {
+                                            "type": "and"
+                                        },
+                                        "query": {
+                                            "params": []
+                                        },
+                                        "reducer": {
+                                            "params": [],
+                                            "type": "avg"
+                                        },
+                                        "type": "query"
+                                    }
+                                ],
+                                "datasource": {
+                                    "name": "Expression",
+                                    "type": "__expr__",
+                                    "uid": "__expr__"
+                                },
+                                "expression": "A",
+                                "intervalMs": 1000,
+                                "maxDataPoints": 43200,
+                                "refId": "B",
+                                "type": "threshold"
+                            }
+                        }
+                    ],
+                    "dashboardUid": "",
+                    "panelId": 0,
+                    "noDataState": "NoData",
+                    "execErrState": "Error",
+                    "for": "2m",
+                    "annotations": {
+                        "summary": "Threshold 80%"
+                    },
+                    "labels": {},
+                    "isPaused": false,
+                    "notification_settings": {
+                        "receiver": "CW_DC_PROD"
+                    }
+                },
+                {
+                    "uid": "3",
+                    "title": "High Disk Usage",
+                    "condition": "C",
+                    "data": [
+                        {
+                            "refId": "A",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "PB01748D44C4D79F9",
+                            "model": {
+                                "datasource": {
+                                    "type": "prometheus",
+                                    "uid": "PB01748D44C4D79F9"
+                                },
+                                "editorMode": "code",
+                                "expr": "100 * (node_filesystem_size_bytes{mountpoint=~'^/($|mnt.*)', group='prd'} - node_filesystem_free_bytes{mountpoint=~'^/($|mnt.*)', group='prd'}) / node_filesystem_size_bytes{mountpoint=~'^/($|mnt.*)', group='prd'}",
+                                "instant": true,
+                                "intervalMs": 1000,
+                                "legendFormat": "__auto",
+                                "maxDataPoints": 43200,
+                                "range": false,
+                                "refId": "A"
+                            }
+                        },
+                        {
+                            "refId": "C",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "__expr__",
+                            "model": {
+                                "conditions": [
+                                    {
+                                        "evaluator": {
+                                            "params": [
+                                                80
+                                            ],
+                                            "type": "gt"
+                                        },
+                                        "operator": {
+                                            "type": "and"
+                                        },
+                                        "query": {
+                                            "params": [
+                                                "C"
+                                            ]
+                                        },
+                                        "reducer": {
+                                            "params": [],
+                                            "type": "last"
+                                        },
+                                        "type": "query"
+                                    }
+                                ],
+                                "datasource": {
+                                    "type": "__expr__",
+                                    "uid": "__expr__"
+                                },
+                                "expression": "A",
+                                "intervalMs": 1000,
+                                "maxDataPoints": 43200,
+                                "refId": "C",
+                                "type": "threshold"
+                            }
+                        }
+                    ],
+                    "dashboardUid": "",
+                    "panelId": 0,
+                    "noDataState": "NoData",
+                    "execErrState": "Error",
+                    "for": "2m",
+                    "annotations": {
+                        "summary": "Threshold 80%"
+                    },
+                    "labels": {},
+                    "isPaused": false,
+                    "notification_settings": {
+                        "receiver": "CW_DC_PROD"
+                    }
+                },
+                {
+                    "uid": "4",
+                    "title": "Container High Memory Usage",
+                    "condition": "C",
+                    "data": [
+                        {
+                            "refId": "A",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "PB01748D44C4D79F9",
+                            "model": {
+                                "datasource": {
+                                    "type": "prometheus",
+                                    "uid": "PB01748D44C4D79F9"
+                                },
+                                "editorMode": "code",
+                                "expr": "100 * (\r\n  container_memory_usage_bytes{name!='', name!~'^monitor_.*', group='prd'}\r\n  / clamp_min(container_spec_memory_limit_bytes{name!='', name!~'^monitor_.*', group='prd'}, 1)\r\n) AND\r\n(container_spec_memory_limit_bytes{name!='', name!~'^monitor_.*', group='prd'} > 0)",
+                                "instant": true,
+                                "intervalMs": 1000,
+                                "legendFormat": "__auto",
+                                "maxDataPoints": 43200,
+                                "range": false,
+                                "refId": "A"
+                            }
+                        },
+                        {
+                            "refId": "C",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "__expr__",
+                            "model": {
+                                "conditions": [
+                                    {
+                                        "evaluator": {
+                                            "params": [
+                                                80
+                                            ],
+                                            "type": "gt"
+                                        },
+                                        "operator": {
+                                            "type": "and"
+                                        },
+                                        "query": {
+                                            "params": [
+                                                "C"
+                                            ]
+                                        },
+                                        "reducer": {
+                                            "params": [],
+                                            "type": "last"
+                                        },
+                                        "type": "query"
+                                    }
+                                ],
+                                "datasource": {
+                                    "type": "__expr__",
+                                    "uid": "__expr__"
+                                },
+                                "expression": "A",
+                                "intervalMs": 1000,
+                                "maxDataPoints": 43200,
+                                "refId": "C",
+                                "type": "threshold"
+                            }
+                        }
+                    ],
+                    "dashboardUid": "",
+                    "panelId": 0,
+                    "noDataState": "NoData",
+                    "execErrState": "Error",
+                    "for": "2m",
+                    "annotations": {
+                        "summary": "Threshold 80%"
+                    },
+                    "labels": {},
+                    "isPaused": false,
+                    "notification_settings": {
+                        "receiver": "CW_DC_PROD"
+                    }
+                },
+                {
+                    "uid": "5",
+                    "title": "Container High CPU Usage",
+                    "condition": "C",
+                    "data": [
+                        {
+                            "refId": "A",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "PB01748D44C4D79F9",
+                            "model": {
+                                "datasource": {
+                                    "type": "prometheus",
+                                    "uid": "PB01748D44C4D79F9"
+                                },
+                                "editorMode": "code",
+                                "expr": "sum(rate(container_cpu_usage_seconds_total{name!='', name!~'^monitor.*', group='prd'}[30s])) by (instance, name) * 100",
+                                "instant": true,
+                                "intervalMs": 1000,
+                                "legendFormat": "__auto",
+                                "maxDataPoints": 43200,
+                                "range": false,
+                                "refId": "A"
+                            }
+                        },
+                        {
+                            "refId": "C",
+                            "relativeTimeRange": {
+                                "from": 600,
+                                "to": 0
+                            },
+                            "datasourceUid": "__expr__",
+                            "model": {
+                                "conditions": [
+                                    {
+                                        "evaluator": {
+                                            "params": [
+                                                80
+                                            ],
+                                            "type": "gt"
+                                        },
+                                        "operator": {
+                                            "type": "and"
+                                        },
+                                        "query": {
+                                            "params": [
+                                                "C"
+                                            ]
+                                        },
+                                        "reducer": {
+                                            "params": [],
+                                            "type": "last"
+                                        },
+                                        "type": "query"
+                                    }
+                                ],
+                                "datasource": {
+                                    "type": "__expr__",
+                                    "uid": "__expr__"
+                                },
+                                "expression": "A",
+                                "intervalMs": 1000,
+                                "maxDataPoints": 43200,
+                                "refId": "C",
+                                "type": "threshold"
+                            }
+                        }
+                    ],
+                    "dashboardUid": "",
+                    "panelId": 0,
+                    "noDataState": "NoData",
+                    "execErrState": "Error",
+                    "for": "2m",
+                    "annotations": {
+                        "summary": "Threshold 80%"
+                    },
+                    "labels": {},
+                    "isPaused": false,
+                    "notification_settings": {
+                        "receiver": "CW_DC_PROD"
+                    }
+                }
+            ]
+        }
+    ]
+}

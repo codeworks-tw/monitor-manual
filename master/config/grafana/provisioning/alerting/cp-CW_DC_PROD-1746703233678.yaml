@@ -1,0 +1,13 @@
+apiVersion: 1
+contactPoints:
+    - orgId: 1
+      name: CW_DC_PROD
+      receivers:
+        - uid: bel9eo1xljvnlf
+          type: discord
+          settings:
+            message: <@&1361166806873800764> {{ template "default.message" . }}
+            title: Grafana Alerting - {{ template "default.title" . }}
+            url: https://discord.com/api/webhooks/1369960482156318781/6qEmN6svFpENAsVlSi2fAV_NoYbg6cWTsUV_3X8784yhgJEFJjZFG06cuGPCzubKHn_7
+            use_discord_username: true
+          disableResolveMessage: false

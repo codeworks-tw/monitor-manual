@@ -1580,12 +1580,12 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
-            "local"
+            "All"
           ],
           "value": [
-            "local"
+            "$__all"
           ]
         },
         "datasource": {
@@ -1612,7 +1612,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": false,
+          "selected": true,
           "text": [
             "All"
           ],
@@ -1746,8 +1746,8 @@
     ]
   },
   "time": {
-    "from": "2025-05-05T15:14:57.987Z",
-    "to": "2025-05-05T16:14:57.987Z"
+    "from": "now-12h",
+    "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
   "timepicker": {
@@ -1778,6 +1778,6 @@
   "timezone": "browser",
   "title": "[Codeworks] Docker and system monitoring",
   "uid": "20241225",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
