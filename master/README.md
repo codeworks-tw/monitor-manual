@@ -140,7 +140,7 @@ docker exec prometheus kill -HUP 1
 
 ```shell
 # Start a test container with memory limits
-docker run --rm -d --name mem_test_container -m 256m --memory-swap 256m alpine sleep 300
+docker run --rm -d --name test_container -m 256m --memory-swap 256m alpine sleep 300
 
 # Run stress test
 stress --vm 1 --vm-bytes 450M --timeout 5m
