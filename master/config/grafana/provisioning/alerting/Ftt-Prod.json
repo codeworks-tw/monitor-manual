@@ -8,8 +8,8 @@
             "interval": "30s",
             "rules": [
                 {
-                    "uid": "1",
-                    "title": "High Memory Usage",
+                    "uid": "p1",
+                    "title": "High Memory Usage - Prod",
                     "condition": "C",
                     "data": [
                         {
@@ -92,8 +92,8 @@
                     }
                 },
                 {
-                    "uid": "2",
-                    "title": "High CPU Usage",
+                    "uid": "p2",
+                    "title": "High CPU Usage - Prod",
                     "condition": "B",
                     "data": [
                         {
@@ -176,8 +176,8 @@
                     }
                 },
                 {
-                    "uid": "3",
-                    "title": "High Disk Usage",
+                    "uid": "p3",
+                    "title": "High Disk Usage - Prod",
                     "condition": "C",
                     "data": [
                         {
@@ -260,8 +260,8 @@
                     }
                 },
                 {
-                    "uid": "4",
-                    "title": "Container High Memory Usage",
+                    "uid": "p4",
+                    "title": "Container High Memory Usage - Prod",
                     "condition": "C",
                     "data": [
                         {
@@ -344,8 +344,8 @@
                     }
                 },
                 {
-                    "uid": "5",
-                    "title": "Container High CPU Usage",
+                    "uid": "p5",
+                    "title": "Container High CPU Usage - Prod",
                     "condition": "C",
                     "data": [
                         {
