@@ -52,8 +52,7 @@ class ReportConfig:
             if isinstance(shutdown_instance, bool):
                 shutdown_instance = shutdown_instance
             else:
-                shutdown_instance = shutdown_instance.lower() in ('true', '1',
-                                                                  'yes')
+                shutdown_instance = shutdown_instance.lower() in ('true', '1', 'yes')
 
         # Convert year and month to integers
         try:
@@ -85,8 +84,8 @@ class ReportConfig:
             email_subject=request_json.get("email_subject"),
             template_id=request_json.get("template_id"),
             template_data=request_json.get("template_data"),
-            spreadsheet_id=request_json.get("spreadsheet_id"),
-            spreadsheet_tab_name=request_json.get("spreadsheet_tab_name"),
+            spreadsheet_id=request_json.get("spreadsheet_id", DEFAULT_SPREADSHEET_ID),
+            spreadsheet_tab_name=request_json.get("spreadsheet_tab_name", DEFAULT_SPREADSHEET_TAB_NAME),
         )
 
     def validate(self) -> List[str]:

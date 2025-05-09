@@ -14,6 +14,9 @@ DEFAULT_INSTANCE = "All"
 GCS_BUCKET = "cw-general"
 GCS_BASE_PATH = "monitor-report"
 
+DEFAULT_SPREADSHEET_ID = "1hsXE2yT9YHvEfnadTAgi7tZHvkTXlRfek-VuEvxmhb4"
+DEFAULT_SPREADSHEET_TAB_NAME = "維運紀錄"
+
 # External Service URLs
 
 # PROMETHEUS_BASE_URL = "http://35.229.168.187:9090"

@@ -186,11 +186,11 @@ def get_grafana_time_range(year: int, month: int, tz: timezone = UTC_PLUS_8):
 
 
 def build_template_data(
-        dashboard_uid,
-        year,
-        month,
-        spreadsheet_id: str = '1hsXE2yT9YHvEfnadTAgi7tZHvkTXlRfek-VuEvxmhb4',
-        spreadsheet_spreadsheet_tab_name: str = '維運紀錄'):
+        dashboard_uid: str,
+        year: int,
+        month: int,
+        spreadsheet_id: str,
+        spreadsheet_spreadsheet_tab_name: str):
     header_row, data_rows = get_spreadsheet_tab_rows(
         spreadsheet_id, spreadsheet_spreadsheet_tab_name)
     table_headers = header_row[:3] + header_row[4:]

@@ -169,7 +169,8 @@ def generate_report(
                 report_instance,
                 report_interval,
                 file_name=
-                f"伺服器執行情況報表-{year}-{month}-{datetime.now().timestamp()}.pdf")
+                f"伺服器執行情況報表-{year}-{month}-{round(datetime.now().timestamp(), 0)}.pdf"
+            )
 
             # Upload to GCS for backup
             utils.upload_to_gcs(

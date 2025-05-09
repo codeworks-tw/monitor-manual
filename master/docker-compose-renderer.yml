@@ -15,15 +15,18 @@ services:
     restart: always
   chrome:
     # 9222 port will be exposed automatically, remember to set it in the report plugin config page as ws://localhost:9222
-    image: chromedp/headless-shell:latest
+    # image: chromedp/headless-shell:latest
+    build:
+      context: .  # Path to your Dockerfile directory
+      dockerfile: dockerfile.headless-chrome  # Specify the Dockerfile to use
     container_name: chrome
     shm_size: 2G
     init: true
     restart: always
     ports:
       - 9222:9222
-      
+
 networks:
-  default:    
+  default:
     name: monitor-network
     external: false # docker compose will automatically create and manage this network

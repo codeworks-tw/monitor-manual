@@ -135,7 +135,7 @@ apps:
       # Custom HTML header template to be used in the report. If empty, default template
       # will be used
       #
-      headerTemplate: ''
+      headerTemplate: '<html lang="zh-TW"><meta charset="UTF-8" /><style type="text/css"> body { font-family: "Noto Sans CJK SC", "WenQuanYi Zen Hei", "WenQuanYi Micro Hei", sans-serif; } html { -webkit-print-color-adjust: exact; print-color-adjust: exact; } [data-theme="light"] { --color-bg: #ffffff; --color-fg: #000000; --color-margin: lightgray; } [data-theme="dark"] { --color-bg: #181b1f; --color-fg: #ffffff; --color-margin: #ffffff; } .content-header { width: 100%; background-color: var(--color-bg); color: var(--color-fg); display: flex; flex-wrap: wrap; padding: 5px; vertical-align: middle; font-weight: bold; font-size: 20px; margin-left: 20px; margin-right: 20px; display: inline-block; text-align: start; border-bottom: 1px solid var(--color-margin); } .content-header-left { font-weight: bold; font-size: 8px; float: left; } .content-header-right { font-weight: bold; font-size: 8px; float: right; }</style><body> <div class="content-header" data-theme="light"> <div class="content-header-left" data-theme="light">Generated on {{.Date}}</div> <div class="content-header-right" data-theme="light">Datetime range: {{.From}} to {{.To}}</div> <br /> {{ .Title }} <span class="pageNumber"></span>/<span class="totalPages"></span> <!-- {{- if .VariableValues}} <br /> <div class="content-header-left" data-theme="light">{{ .VariableValues }}</div> {{- end}} --> </div></body></html>'
 
       # Footer HTML template in the report.
       #

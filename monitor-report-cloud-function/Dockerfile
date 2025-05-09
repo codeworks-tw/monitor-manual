@@ -1,10 +1,12 @@
 FROM python:3.9-slim
 
-# Install wkhtmltopdf and Chinese fonts
-RUN apt-get update && apt-get install -y wkhtmltopdf
-
-# Install fonts for supporting chinese characters in wkhtmltopdf
-RUN apt-get install -y fonts-wqy-microhei ttf-wqy-microhei fonts-wqy-zenhei ttf-wqy-zenhei \
+# Install wkhtmltopdf and fonts for supporting chinese characters in pdf files
+RUN apt-get update && apt-get install -y \
+    wkhtmltopdf \
+    fonts-wqy-microhei \
+    ttf-wqy-microhei \
+    fonts-wqy-zenhei \
+    ttf-wqy-zenhei \
     && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
