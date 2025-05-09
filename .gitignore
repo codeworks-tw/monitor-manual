@@ -4,3 +4,5 @@ letsencrypt
 
 __pycache__/
 venv/
+key.json
+output.html

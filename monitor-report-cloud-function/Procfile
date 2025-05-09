@@ -1,1 +1,0 @@
-web: functions-framework --target=generate_report --port=$PORT

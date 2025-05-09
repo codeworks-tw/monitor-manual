@@ -20,7 +20,6 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 893,
   "graphTooltip": 1,
-  "id": 6,
   "links": [],
   "panels": [
     {
@@ -218,7 +217,7 @@
           "step": 120
         }
       ],
-      "title": "CPU Usage",
+      "title": "CPU 使用率",
       "type": "timeseries"
     },
     {
@@ -350,7 +349,7 @@
           "step": 600
         }
       ],
-      "title": "Memory Usage",
+      "title": "記憶體使用率",
       "type": "timeseries"
     },
     {
@@ -482,7 +481,7 @@
           "step": 600
         }
       ],
-      "title": "Disk Usage",
+      "title": "硬碟使用率",
       "type": "timeseries"
     },
     {
@@ -624,7 +623,7 @@
           "step": 600
         }
       ],
-      "title": "Disk I/O",
+      "title": "硬碟使用量",
       "type": "timeseries"
     },
     {
@@ -766,7 +765,7 @@
           "step": 600
         }
       ],
-      "title": "Network Traffic",
+      "title": "網路使用量",
       "type": "timeseries"
     },
     {
@@ -893,7 +892,7 @@
           "refId": "B"
         }
       ],
-      "title": "CPU Usage per Container",
+      "title": "容器 CPU 使用率",
       "type": "timeseries"
     },
     {
@@ -1008,7 +1007,7 @@
           "refId": "B"
         }
       ],
-      "title": "Memory Usage per Container",
+      "title": "容器記憶體使用率",
       "type": "timeseries"
     },
     {
@@ -1151,7 +1150,7 @@
           "refId": "D"
         }
       ],
-      "title": "Disk IO rate per Container",
+      "title": "容器硬碟使用量",
       "type": "timeseries"
     },
     {
@@ -1266,7 +1265,7 @@
           "step": 240
         }
       ],
-      "title": "Disk Usage per Container",
+      "title": "容器硬碟使用率",
       "type": "timeseries"
     },
     {
@@ -1379,7 +1378,7 @@
           "step": 240
         }
       ],
-      "title": "Received Network Traffic per Container",
+      "title": "容器網路下載量",
       "type": "timeseries"
     },
     {
@@ -1492,7 +1491,7 @@
           "step": 240
         }
       ],
-      "title": "Sent Network Traffic per Container",
+      "title": "容器網路上傳量",
       "type": "timeseries"
     }
   ],
@@ -1504,7 +1503,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "prd"
           ],
@@ -1536,7 +1535,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -1670,7 +1669,7 @@
     ]
   },
   "time": {
-    "from": "now-12h",
+    "from": "now-30m",
     "to": "now"
   },
   "timeRangeUpdatedDuringEditOrView": false,
@@ -1700,8 +1699,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "[FTT] [Prod] Docker and system monitoring",
+  "title": "[FTT] 伺服器執行情況報表",
   "uid": "cel9ij7o23ev4a",
-  "version": 2,
+  "version": 1,
   "weekStart": ""
 }

@@ -1,9 +1,20 @@
-from google.cloud import storage, secretmanager
-from config import PROJECT
+# Standard Library Imports
+from datetime import datetime, timezone
+import os
 import base64
-import requests
+import json
 
-def get_secret_value(secret_id, version_id = "latest"):
+# Third-Party Library Imports
+import requests
+from google.cloud import storage, secretmanager
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+
+# Local Imports
+from constants import *
+
+
+def get_secret_value(secret_id: str, version_id: str = "latest"):
     """
     Retrieves a secret value from Google Cloud Platform Secret Manager.
 
@@ -20,7 +31,12 @@ def get_secret_value(secret_id, version_id = "latest"):
     token = response.payload.data.decode("UTF-8")
     return token or ""
 
-def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
+
+GRAFANA_TOKEN = get_secret_value("grafana-service-account-token")
+
+
+def upload_to_gcs(bucket_name: str, source_file_name: str,
+                  destination_blob_name: str):
     """
     Uploads a local file to Google Cloud Storage bucket.
 
@@ -37,45 +53,269 @@ def upload_to_gcs(bucket_name, source_file_name, destination_blob_name):
     blob = bucket.blob(destination_blob_name)
 
     blob.upload_from_filename(source_file_name)
-    print(f"✅ File {source_file_name} uploaded to gs://{bucket_name}/{destination_blob_name}.")
+    print(
+        f"✅ File {source_file_name} uploaded to gs://{bucket_name}/{destination_blob_name}."
+    )
 
-def send_email(file_path, file_name, email_receivers, email_subject = "Monthly Monitor Report", email_text_body = "Monthly Monitor Report is ready."):
-    """
-    Sends an email with an attached file using SMTP2Go API.
 
+def query_prometheus(query: str, time: float):
+    if not query:
+        return None
+    request_url = (f"{PROMETHEUS_BASE_URL}/api/v1/query"
+                   f"?query={query}"
+                   f"&time={time}")
+    response = requests.get(request_url)
+    result = response.json()
+    return result
+
+
+def get_grafana_annotations(dashboardUID: str = 'cel9ij7o23ev4a'):
+    headers = {"Authorization": f"Bearer {GRAFANA_TOKEN}"}
+    request_url = (f"{GRAFANA_BASE_URL}/api/annotations"
+                   f"?type=alert"
+                   f"&dashboardUID={dashboardUID}")
+    response = requests.get(request_url, headers=headers)
+    response.raise_for_status()
+    result = response.json()
+    return result
+
+
+def get_spreadsheet_tab_rows(spreadsheet_id: str, spreadsheet_tab_name: str):
+    SCOPES = ['https://www.googleapis.com/auth/spreadsheets.readonly']
+
+    try:
+        # Get credentials from service account
+
+        # for cloud function
+        service_account_json = json.loads(
+            get_secret_value("30508068041-compute-service-account"))
+        credentials = service_account.Credentials.from_service_account_info(
+            service_account_json, scopes=SCOPES)
+
+        # for local testing
+        # credentials = service_account.Credentials.from_service_account_file(
+        #     'key.json', scopes=SCOPES)
+
+        # Initialize Sheets API
+        sheets_service = build('sheets', 'v4', credentials=credentials)
+
+        # Get the values from the specified tab
+        result = sheets_service.spreadsheets().values().get(
+            spreadsheetId=spreadsheet_id,
+            range=
+            f'{spreadsheet_tab_name}!A:Z'  # This will get all columns from A to Z
+        ).execute()
+
+        values = result.get('values', [])
+
+        if not values:
+            return {
+                'status': 'error',
+                'message': f'No data found in tab "{spreadsheet_tab_name}"'
+            }, 404
+
+        # Get the headers and data
+        header_row = values[0]  # First row as headers
+        data_rows = values[1:]  # Rest of the data
+        # Create a list to store the aligned data
+        aligned_data_rows = []
+
+        # Iterate over each row in the data
+        for row in data_rows:
+            # Create a dictionary to map the data to the headers
+            row_dict = {
+                header: ''
+                for header in header_row
+            }  # Initialize with empty strings
+            # Fill in the data for the columns that exist
+            for i, value in enumerate(row):
+                if i < len(header_row
+                           ):  # Ensure we don't exceed the number of headers
+                    row_dict[header_row[i]] = value
+            # Append the aligned row to the list
+            aligned_data_rows.append(
+                [row_dict[header] for header in header_row])
+
+        return header_row, aligned_data_rows
+
+    except Exception as e:
+        return {'status': 'error', 'message': str(e)}, 500
+
+
+def extract_query_single_value(query_result):
+    """Extract value from Prometheus query result"""
+    try:
+        if query_result:
+            result_val = query_result.get('data',
+                                          {}).get('result', [{}])[0].get(
+                                              'value', [None, None])[1]
+            if result_val:
+                return result_val
+    except (KeyError, IndexError):
+        pass
+    return None
+
+
+def get_first_day_timestamp_of_next_month(year: int,
+                                          month: int,
+                                          tz: timezone = UTC_PLUS_8
+                                          ) -> datetime:
+    d = datetime(year, month, 1, 0, 0, 0, tzinfo=tz)
+    if month == 12:
+        d = datetime(year + 1, 1, 1, 0, 0, 0)
+    else:
+        d = datetime(year, month + 1, 1, 0, 0, 0)
+    return d
+
+
+def get_grafana_time_range(year: int, month: int, tz: timezone = UTC_PLUS_8):
+    # Start of the current month at 00:00:00
+    start_dt = datetime(year, month, 1, tzinfo=tz)
+
+    # Start of next month
+    if month == 12:
+        next_month_dt = datetime(year + 1, 1, 1, tzinfo=tz)
+    else:
+        next_month_dt = datetime(year, month + 1, 1, tzinfo=tz)
+
+    # Convert to epoch milliseconds
+    start_ts = int(start_dt.timestamp() * 1000)
+    end_ts = int(next_month_dt.timestamp() * 1000)
+
+    return start_ts, end_ts
+
+
+def build_template_data(
+        dashboard_uid,
+        year,
+        month,
+        spreadsheet_id: str = '1hsXE2yT9YHvEfnadTAgi7tZHvkTXlRfek-VuEvxmhb4',
+        spreadsheet_spreadsheet_tab_name: str = '維運紀錄'):
+    header_row, data_rows = get_spreadsheet_tab_rows(
+        spreadsheet_id, spreadsheet_spreadsheet_tab_name)
+    table_headers = header_row[:3] + header_row[4:]
+    table_data = [row[:3] + row[4:] for row in data_rows]
+    total_upload_size = "0 GB"
+    total_download_size = "0 GB"
+    alert_count = 1
+    availability_rate = 100
+
+    # Get timestamp of the first day of the next month as query time
+    timestamp = round(
+        get_first_day_timestamp_of_next_month(year, month).timestamp(), 0)
+
+    total_upload_result = query_prometheus(
+        query=
+        "sum(increase(node_network_transmit_bytes_total{group='dev-01'}[30d])) by (group)",
+        time=timestamp)
+    total_download_result = query_prometheus(
+        query=
+        "sum(increase(node_network_receive_bytes_total{group='dev-01'}[30d])) by (group)",
+        time=timestamp)
+    availability_rate_result = query_prometheus(
+        query="avg_over_time(up{job='node-status', group='dev-01'}[30d]) * 100",
+        time=timestamp)
+
+    if upload_val := extract_query_single_value(total_upload_result):
+        # Convert to GB and round to 2 decimal places
+        upload_gb = float(upload_val) / (1024**3)
+        total_upload_size = f'{upload_gb:.2f} GB'
+
+    if download_val := extract_query_single_value(total_download_result):
+        # Convert to GB and round to 2 decimal places
+        download_gb = float(download_val) / (1024**3)
+        total_download_size = f'{download_gb:.2f} GB'
+
+    if availability_rate_val := extract_query_single_value(
+            availability_rate_result):
+        availability_rate = 100 if float(availability_rate_val) > 90 \
+            else round(float(availability_rate_val), 2)
+
+    alerts = get_grafana_annotations(dashboard_uid)
+    alert_count = len(
+        [alert for alert in alerts if alert.get('newState') == 'Alerting'])
+
+    return table_headers, table_data, total_upload_size, total_download_size, alert_count, availability_rate
+
+
+def download_report(dashboard_uid, report_from, report_to, report_servergroup,
+                    report_instance, report_interval, file_name):
+    """Download the report from Grafana."""
+    headers = {"Authorization": f"Bearer {GRAFANA_TOKEN}"}
+    report_url = (f"{GRAFANA_BASE_URL}{GRAFANA_REPORT_ENDPOINT}"
+                  f"?dashUid={dashboard_uid}"
+                  f"&from={report_from}"
+                  f"&to={report_to}"
+                  f"&var-servergroup={report_servergroup}"
+                  f"&var-instance={report_instance}"
+                  f"&var-interval={report_interval}")
+    response = requests.get(report_url, headers=headers)
+    response.raise_for_status()
+
+    with open(file_name, "wb") as f:
+        f.write(response.content)
+    return file_name
+
+
+def send_email(file_paths=None,
+               email_receivers=None,
+               email_subject="Monthly Monitor Report",
+               email_text_body="Monthly Monitor Report is ready.",
+               template_id=None,
+               template_data=None):
+    """Send an email with optional attachments using SMTP2Go API.
+    
     Args:
-        file_path (str): Path to the local file to be attached
-        file_name (str): Name to be used for the attached file in the email
-        email_receivers (list[str]): List of email addresses (e.g. ["user1@gmail.com", "user2@gmail.com"])
+        file_paths (list[str] or str, optional): Path(s) to the local file(s) to be attached
+        email_receivers (list[str]): List of email addresses
         email_subject (str, optional): Email subject. Defaults to "Monthly Monitor Report"
         email_text_body (str, optional): Email body text. Defaults to "Monthly Monitor Report is ready."
-
-    Prints:
-        API response status code and JSON response
+        template_id (str, optional): Template ID for template-based emails
+        template_data (dict, optional): Data to be used in the template
     """
-    with open(file_path, "rb") as f:
-        encoded_file = base64.b64encode(f.read()).decode("utf-8")
-
     payload = {
         "sender": "report@codeworkstw.com",
         "to": email_receivers,
-        "subject": email_subject,
-        "text_body": email_text_body,
-        "attachments": [
-            {
-                "filename": file_name,
-                "fileblob": encoded_file
-            }
-        ]
     }
-    
-    response = requests.post(
-        "https://api.smtp2go.com/v3/email/send",
-        headers={
-            "X-Smtp2go-Api-Key": get_secret_value("smtp2go-api-key"),
-            "Content-Type": "application/json"
-        },
-        json=payload
-    )
+
+    # Add template data if provided, otherwise add regular email data
+    if template_id:
+        payload["template_id"] = template_id
+        if template_data:
+            payload["template_data"] = template_data
+    else:
+        payload.update({
+            "subject": email_subject,
+            "text_body": email_text_body,
+        })
+
+    print("File paths:", file_paths)
+    # Add attachment(s) if file(s) are provided
+    if file_paths:
+        # Convert single file to list for consistent handling
+        if isinstance(file_paths, str):
+            file_paths = [file_paths]
+
+        attachments = []
+
+        for path in file_paths:
+            with open(path, "rb") as f:
+                encoded_file = base64.b64encode(f.read()).decode("utf-8")
+            # Use the filename from the path
+            filename = os.path.basename(path)
+            attachments.append({
+                "filename": filename,
+                "fileblob": encoded_file
+            })
+        payload["attachments"] = attachments
+
+    response = requests.post("https://api.smtp2go.com/v3/email/send",
+                             headers={
+                                 "X-Smtp2go-Api-Key":
+                                 get_secret_value("smtp2go-api-key"),
+                                 "Content-Type":
+                                 "application/json"
+                             },
+                             json=payload)
 
     print(response.status_code, response.json())

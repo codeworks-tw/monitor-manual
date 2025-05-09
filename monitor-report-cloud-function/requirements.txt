@@ -3,8 +3,9 @@ google-cloud-compute==1.14.*
 google-cloud-storage==2.14.*
 google-cloud-secret-manager==2.18.*
 requests==2.31.*
-google-api-python-client==2.*
+google-api-python-client==2.16.0
 google-auth-httplib2==0.1.*
 google-auth-oauthlib==1.*
-pandas==2.*
 openpyxl==3.*
+pdfkit==1.0.0
+Jinja2==3.1.*

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ year }} 年 {{ month }} 月 系統監控月報表</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      padding: 1rem;
+      color: #333;
+      font-size: 14px;
+    }
+    h1 {
+      text-align: center;
+      font-size: 20px;
+      margin-bottom: 1rem;
+    }
+    .section {
+      background: white;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    }
+    h2 {
+      border-left: 4px solid #007bff;
+      padding-left: 0.4rem;
+      font-size: 16px;
+      color: #007bff;
+      margin: 0.2rem 0 0.4rem;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 0.3rem;
+    }
+    th, td {
+      border-bottom: 1px solid #ddd;
+      padding: 0.4rem;
+      text-align: left;
+    }
+    th {
+      background-color: #f7f7f7;
+    }
+    p {
+      margin: 0.2rem 0;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>{{ year }} 年 {{ month }} 月 系統監控月報表</h1>
+
+  <div class="section">
+    <h2>1. 維運事項紀錄</h2>
+    <table>
+      <thead>
+        <tr>
+          {% for header in table_headers %}
+          <th>{{ header }}</th>
+          {% endfor %}
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in table_data %}
+        <tr>
+          {% for cell in row %}
+          <td>{{ cell }}</td>
+          {% endfor %}
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section">
+    <h2>2. 流量統計</h2>
+    <p>總上傳量：<strong>{{ total_upload_size }}</strong></p>
+    <p>總下載量：<strong>{{ total_download_size }}</strong></p>
+  </div>
+
+  <div class="section">
+    <h2>3. 主機異常紀錄</h2>
+    <p>異常次數：<strong>{{ alert_count }} 次</strong></p>
+    <p>妥善率：<strong>{{ availability_rate }}%</strong></p>
+  </div>
+
+</body>
+</html>
