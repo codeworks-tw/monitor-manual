@@ -961,7 +961,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{name!=\"\", name!~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name) * 100",
+          "expr": "sum(rate(container_cpu_usage_seconds_total{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name) * 100",
           "hide": false,
           "instant": false,
           "legendFormat": "{{instance}}-{{name}}",
@@ -1076,7 +1076,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "100 * (\r\n  container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}\r\n  / clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}, 1)\r\n) AND\r\n(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"} > 0)",
+          "expr": "100 * (\r\n  sum(container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"})\r\n  by (name, instance)\r\n  /\r\n  sum(clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}, 1))\r\n  by (name, instance)\r\n) AND\r\nsum(\r\n  (container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"} > 0)) by (instance, name)\r\n",
           "hide": false,
           "instant": false,
           "legendFormat": "{{instance}}-{{name}}",
@@ -1177,7 +1177,7 @@
           },
           "editorMode": "code",
           "exemplar": true,
-          "expr": "rate(container_fs_reads_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
+          "expr": "sum by (name, instance) (\r\n  rate(container_fs_reads_bytes_total{\r\n    name!=\"\", \r\n    name!~\"^monitor_.*\", \r\n    group=~\"$servergroup\", \r\n    instance=~\"$instance\"\r\n  }[$__interval])\r\n)\r\n",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "READ {{instance}}-{{name}}",
@@ -1191,7 +1191,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "-rate(container_fs_writes_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])",
+          "expr": "sum by (name, instance) (\r\n  -rate(container_fs_reads_bytes_total{\r\n    name!=\"\", \r\n    name!~\"^monitor_.*\", \r\n    group=~\"$servergroup\", \r\n    instance=~\"$instance\"\r\n  }[$__interval])\r\n)\r\n",
           "hide": false,
           "instant": false,
           "legendFormat": "WRITE {{instance}}-{{name}}",
@@ -1227,7 +1227,7 @@
           "refId": "D"
         }
       ],
-      "title": "Disk IO rate per Container",
+      "title": "Disk I/O per Container",
       "type": "timeseries"
     },
     {
@@ -1333,7 +1333,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "100 * container_fs_usage_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / container_fs_limit_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
+          "expr": "100 * sum(container_fs_usage_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, name)\r\n/\r\nsum(container_fs_limit_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, name)\r\n",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
@@ -1446,7 +1446,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_receive_bytes_total{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name)",
+          "expr": "sum by (instance, name) (\r\n  rate(container_network_receive_bytes_total{\r\n    name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"\r\n  }[$__interval])\r\n)",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
@@ -1559,7 +1559,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_transmit_bytes_total{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance, name)",
+          "expr": "sum by (instance, name) (\r\n  rate(container_network_transmit_bytes_total{\r\n    name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"\r\n  }[$__interval])\r\n)",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "{{instance}}-{{name}}",
@@ -1778,6 +1778,6 @@
   "timezone": "browser",
   "title": "[Codeworks] Docker and system monitoring",
   "uid": "20241225",
-  "version": 3,
+  "version": 4,
   "weekStart": ""
 }
