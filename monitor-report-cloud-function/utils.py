@@ -12,6 +12,7 @@ from googleapiclient.discovery import build
 
 # Local Imports
 from constants import *
+from report_config import ReportConfig
 
 
 def get_secret_value(secret_id: str, version_id: str = "latest"):
@@ -35,14 +36,14 @@ def get_secret_value(secret_id: str, version_id: str = "latest"):
 GRAFANA_TOKEN = get_secret_value("grafana-service-account-token")
 
 
-def upload_to_gcs(bucket_name: str, source_file_name: str,
+def upload_to_gcs(bucket_name: str, source_filename: str,
                   destination_blob_name: str):
     """
     Uploads a local file to Google Cloud Storage bucket.
 
     Args:
         bucket_name (str): The name of the GCS bucket (e.g., 'cw-general')
-        source_file_name (str): Path to the local file to upload
+        source_filename (str): Path to the local file to upload
         destination_blob_name (str): Destination path in the GCS bucket (e.g., 'monitor-report/report.pdf')
 
     Prints:
@@ -52,15 +53,14 @@ def upload_to_gcs(bucket_name: str, source_file_name: str,
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
 
-    blob.upload_from_filename(source_file_name)
-    print(
-        f"✅ File {source_file_name} uploaded to gs://{bucket_name}/{destination_blob_name}."
-    )
+    blob.upload_from_filename(source_filename)
+    print(f"✅ File {source_filename} uploaded to gs://{bucket_name}/{destination_blob_name}.")
 
 
 def query_prometheus(query: str, time: float):
     if not query:
         return None
+    
     request_url = (f"{PROMETHEUS_BASE_URL}/api/v1/query"
                    f"?query={query}"
                    f"&time={time}")
@@ -102,8 +102,7 @@ def get_spreadsheet_tab_rows(spreadsheet_id: str, spreadsheet_tab_name: str):
         # Get the values from the specified tab
         result = sheets_service.spreadsheets().values().get(
             spreadsheetId=spreadsheet_id,
-            range=
-            f'{spreadsheet_tab_name}!A:Z'  # This will get all columns from A to Z
+            range=f'{spreadsheet_tab_name}!A:Z'  # This will get all columns from A to Z
         ).execute()
 
         values = result.get('values', [])
@@ -185,12 +184,9 @@ def get_grafana_time_range(year: int, month: int, tz: timezone = UTC_PLUS_8):
     return start_ts, end_ts
 
 
-def build_template_data(
-        dashboard_uid: str,
-        year: int,
-        month: int,
-        spreadsheet_id: str,
-        spreadsheet_spreadsheet_tab_name: str):
+def build_template_data(dashboard_uid: str, year: int, month: int,
+                        spreadsheet_id: str,
+                        spreadsheet_spreadsheet_tab_name: str):
     header_row, data_rows = get_spreadsheet_tab_rows(
         spreadsheet_id, spreadsheet_spreadsheet_tab_name)
     table_headers = header_row[:3] + header_row[4:]
@@ -205,12 +201,10 @@ def build_template_data(
         get_first_day_timestamp_of_next_month(year, month).timestamp(), 0)
 
     total_upload_result = query_prometheus(
-        query=
-        "sum(increase(node_network_transmit_bytes_total{group='dev-01'}[30d])) by (group)",
+        query="sum(increase(node_network_transmit_bytes_total{group='dev-01'}[30d])) by (group)",
         time=timestamp)
     total_download_result = query_prometheus(
-        query=
-        "sum(increase(node_network_receive_bytes_total{group='dev-01'}[30d])) by (group)",
+        query="sum(increase(node_network_receive_bytes_total{group='dev-01'}[30d])) by (group)",
         time=timestamp)
     availability_rate_result = query_prometheus(
         query="avg_over_time(up{job='node-status', group='dev-01'}[30d]) * 100",
@@ -239,7 +233,7 @@ def build_template_data(
 
 
 def download_report(dashboard_uid, report_from, report_to, report_servergroup,
-                    report_instance, report_interval, file_name):
+                    report_instance, report_interval, filename):
     """Download the report from Grafana."""
     headers = {"Authorization": f"Bearer {GRAFANA_TOKEN}"}
     report_url = (f"{GRAFANA_BASE_URL}{GRAFANA_REPORT_ENDPOINT}"
@@ -252,30 +246,31 @@ def download_report(dashboard_uid, report_from, report_to, report_servergroup,
     response = requests.get(report_url, headers=headers)
     response.raise_for_status()
 
-    with open(file_name, "wb") as f:
+    with open(filename, "wb") as f:
         f.write(response.content)
-    return file_name
+    return filename
 
 
-def send_email(file_paths=None,
-               email_receivers=None,
-               email_subject="Monthly Monitor Report",
-               email_text_body="Monthly Monitor Report is ready.",
-               template_id=None,
-               template_data=None):
+def send_email(config: ReportConfig, attachment_paths=None):
     """Send an email with optional attachments using SMTP2Go API.
-    
+
     Args:
-        file_paths (list[str] or str, optional): Path(s) to the local file(s) to be attached
-        email_receivers (list[str]): List of email addresses
-        email_subject (str, optional): Email subject. Defaults to "Monthly Monitor Report"
-        email_text_body (str, optional): Email body text. Defaults to "Monthly Monitor Report is ready."
+        attachment_paths (list[str] or str, optional): Path(s) to the local file(s) to be attached
+        receivers (list[str]): List of email addresses
+        subject (str, optional): Email subject. Defaults to "Monthly Monitor Report"
+        text_body (str, optional): Email body text. Defaults to "Monthly Monitor Report is ready."
         template_id (str, optional): Template ID for template-based emails
         template_data (dict, optional): Data to be used in the template
     """
+    receivers = config.email_receivers
+    text_body = config.email_text_body
+    subject = config.email_subject
+    template_id = config.email_template_id
+    template_data = config.email_template_data
+
     payload = {
         "sender": "report@codeworkstw.com",
-        "to": email_receivers,
+        "to": receivers,
     }
 
     # Add template data if provided, otherwise add regular email data
@@ -285,20 +280,19 @@ def send_email(file_paths=None,
             payload["template_data"] = template_data
     else:
         payload.update({
-            "subject": email_subject,
-            "text_body": email_text_body,
+            "subject": subject,
+            "text_body": text_body,
         })
 
-    print("File paths:", file_paths)
     # Add attachment(s) if file(s) are provided
-    if file_paths:
+    if attachment_paths:
         # Convert single file to list for consistent handling
-        if isinstance(file_paths, str):
-            file_paths = [file_paths]
+        if isinstance(attachment_paths, str):
+            attachment_paths = [attachment_paths]
 
         attachments = []
 
-        for path in file_paths:
+        for path in attachment_paths:
             with open(path, "rb") as f:
                 encoded_file = base64.b64encode(f.read()).decode("utf-8")
             # Use the filename from the path
@@ -318,4 +312,5 @@ def send_email(file_paths=None,
                              },
                              json=payload)
 
-    print(response.status_code, response.json())
+    if response.status_code != 200:
+        raise Exception(f"Unexpected status code: {response.status_code}, {response.json()}")

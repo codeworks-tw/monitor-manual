@@ -5,4 +5,5 @@ letsencrypt
 __pycache__/
 venv/
 key.json
+service-account.json
 output.html

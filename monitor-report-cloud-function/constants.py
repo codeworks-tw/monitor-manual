@@ -1,4 +1,7 @@
+import os
 from datetime import timezone, timedelta
+from dotenv import load_dotenv
+
 # VM Instance Configuration
 INSTANCE_NAME = "monitor-report-renderer-temp"
 
@@ -18,12 +21,9 @@ DEFAULT_SPREADSHEET_ID = "1hsXE2yT9YHvEfnadTAgi7tZHvkTXlRfek-VuEvxmhb4"
 DEFAULT_SPREADSHEET_TAB_NAME = "維運紀錄"
 
 # External Service URLs
+PROMETHEUS_BASE_URL = os.getenv('PROMETHEUS_BASE_URL')
+GRAFANA_BASE_URL = os.getenv('GRAFANA_BASE_URL')
 
-# PROMETHEUS_BASE_URL = "http://35.229.168.187:9090"
-# GRAFANA_BASE_URL = "http://35.229.168.187:3000"
-
-PROMETHEUS_BASE_URL = "http://10.139.0.2:9090"
-GRAFANA_BASE_URL = "http://10.139.0.2:3000"
 GRAFANA_REPORT_ENDPOINT = "/api/plugins/mahendrapaipuri-dashboardreporter-app/resources/report"
 
 UTC_PLUS_8 = timezone(timedelta(hours=8))

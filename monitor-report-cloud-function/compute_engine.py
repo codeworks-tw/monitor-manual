@@ -14,18 +14,20 @@ from constants import *
 @dataclass
 class ComputeEngineInstance:
     """A class to manage Google Compute Engine VM instances.
-    
+
     This class provides methods for creating, deleting, and checking the existence
     of VM instances in Google Compute Engine.
-    
+
     Attributes:
         instance_client: The Compute Engine instance client.
     """
-    instance_client: compute_v1.InstancesClient
+
+    def __init__(self):
+        self.instance_client = compute_v1.InstancesClient()
 
     def exists(self) -> bool:
         """Check if the VM instance exists.
-        
+
         Returns:
             bool: True if the instance exists, False otherwise.
         """
@@ -50,8 +52,7 @@ class ComputeEngineInstance:
         instance.network_interfaces = [
             compute_v1.NetworkInterface(
                 name=f"projects/{PROJECT}/global/networks/cw-default",
-                subnetwork=
-                f"projects/{PROJECT}/regions/{REGION}/subnetworks/sub-default",
+                subnetwork=f"projects/{PROJECT}/regions/{REGION}/subnetworks/sub-default",
                 network_i_p="10.139.0.3")
         ]
         operation = self.instance_client.insert(project=PROJECT,

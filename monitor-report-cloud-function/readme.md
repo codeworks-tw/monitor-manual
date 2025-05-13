@@ -53,7 +53,7 @@ GET https://monitor-report-30508068041.asia-east1.run.app?
 | `email_receivers` | string | `""` | Comma-separated list of email recipients | `user1@example.com,user2@example.com` |
 | `email_text_body` | string | `"Monthly Monitor Report is ready."` | Email body text | `"Please find attached the weekly report."` |
 | `email_subject` | string | `"Monthly Monitor Report"` | Email subject | `"Weekly System Report"` |
-| `email_file_name` | string | Generated filename | Name of the file in the email attachment | `"weekly-report.pdf"` |
+| `email_filename` | string | Generated filename | Name of the file in the email attachment | `"weekly-report.pdf"` |
 
 ## Response
 
