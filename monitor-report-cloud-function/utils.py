@@ -60,12 +60,13 @@ def upload_to_gcs(bucket_name: str, source_filename: str,
 def query_prometheus(query: str, time: float):
     if not query:
         return None
-    
+
     request_url = (f"{PROMETHEUS_BASE_URL}/api/v1/query"
                    f"?query={query}"
                    f"&time={time}")
     response = requests.get(request_url)
     result = response.json()
+    response.raise_for_status()
     return result
 
 
@@ -77,6 +78,7 @@ def get_grafana_annotations(dashboardUID: str = 'cel9ij7o23ev4a'):
     response = requests.get(request_url, headers=headers)
     response.raise_for_status()
     result = response.json()
+    response.raise_for_status()
     return result
 
 
@@ -138,7 +140,7 @@ def get_spreadsheet_tab_rows(spreadsheet_id: str, spreadsheet_tab_name: str):
         return header_row, aligned_data_rows
 
     except Exception as e:
-        return {'status': 'error', 'message': str(e)}, 500
+        raise Exception(f"Exception occurred while processing data: {str(e)}")
 
 
 def extract_query_single_value(query_result):
@@ -311,6 +313,4 @@ def send_email(config: ReportConfig, attachment_paths=None):
                                  "application/json"
                              },
                              json=payload)
-
-    if response.status_code != 200:
-        raise Exception(f"Unexpected status code: {response.status_code}, {response.json()}")
+    response.raise_for_status()

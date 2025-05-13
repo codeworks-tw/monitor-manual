@@ -84,8 +84,7 @@ def generate_maintenance_summary_report(config: ReportConfig):
         return output_pdf_filename
 
     except Exception as e:
-        print(f"Error converting HTML to PDF: {str(e)}")
-        return None
+        raise (f"Error converting HTML to PDF: {str(e)}")
 
 
 def generate_monitor_report(config: ReportConfig) -> str:
