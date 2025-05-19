@@ -20,6 +20,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 893,
   "graphTooltip": 1,
+  "id": 10,
   "links": [],
   "panels": [
     {
@@ -32,7 +33,7 @@
       },
       "id": 43,
       "panels": [],
-      "title": "Host",
+      "title": "Production",
       "type": "row"
     },
     {
@@ -77,7 +78,9 @@
               "mode": "off"
             }
           },
+          "fieldMinMax": false,
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -150,49 +153,8 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_cpu_system_seconds_total[1m]))",
-          "hide": true,
-          "intervalFactor": 2,
-          "legendFormat": "a",
-          "range": true,
-          "refId": "B",
-          "step": 120
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "expr": "sum(rate(container_cpu_system_seconds_total{name=~\".+\"}[1m]))",
-          "hide": true,
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "nur container",
-          "refId": "F",
-          "step": 10
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "expr": "sum(rate(container_cpu_system_seconds_total{id=\"/\"}[1m]))",
-          "hide": true,
-          "interval": "",
-          "intervalFactor": 2,
-          "legendFormat": "nur docker host",
-          "metric": "",
-          "refId": "A",
-          "step": 20
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
           "exemplar": false,
-          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) * 100)",
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", group=~\"prd\", instance=~\"$instance\"}[$__interval])) * 100)",
           "format": "time_series",
           "hide": false,
           "instant": false,
@@ -203,21 +165,18 @@
           "range": true,
           "refId": "C",
           "step": 600
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "expr": "sum(rate(container_cpu_system_seconds_total{name=~\".+\"}[1m])) + sum(rate(container_cpu_system_seconds_total{id=\"/\"}[1m])) + sum(rate(process_cpu_seconds_total[1m]))",
-          "hide": true,
-          "intervalFactor": 2,
-          "legendFormat": "",
-          "refId": "D",
-          "step": 120
         }
       ],
-      "title": "CPU 使用率",
+      "title": "Production - CPU 使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -266,6 +225,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -338,7 +298,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{group=~\"$servergroup\", instance=~\"$instance\"}) by (instance) / sum(node_memory_MemTotal_bytes{group=~\"$servergroup\", instance=~\"$instance\"}) by (instance))",
+          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{group=~\"prd\", instance=~\"$instance\"}) by (instance) / sum(node_memory_MemTotal_bytes{group=~\"prd\", instance=~\"$instance\"}) by (instance))",
           "hide": false,
           "interval": "",
           "intervalFactor": 2,
@@ -349,7 +309,16 @@
           "step": 600
         }
       ],
-      "title": "記憶體使用率",
+      "title": "Production - 記憶體使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -395,6 +364,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -468,20 +438,29 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "100 * (sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, mountpoint) - sum(node_filesystem_free_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, mountpoint)) / sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, mountpoint)",
+          "expr": "100 * (sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"prd\", instance=~\"$instance\"}) by (instance, mountpoint) - sum(node_filesystem_free_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"prd\", instance=~\"$instance\"}) by (instance, mountpoint)) / sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"prd\", instance=~\"$instance\"}) by (instance, mountpoint)",
           "format": "time_series",
           "hide": false,
           "instant": false,
           "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{mountpoint}}",
+          "legendFormat": "{{instance}} - {{mountpoint}}",
           "metric": "",
           "range": true,
           "refId": "C",
           "step": 600
         }
       ],
-      "title": "硬碟使用率",
+      "title": "Production - 硬碟使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+(.*)",
+            "renamePattern": "$1$2"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -601,7 +580,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(node_disk_read_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance)",
+          "expr": "sum(rate(node_disk_read_bytes_total{group=~\"prd\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "intervalFactor": 2,
           "legendFormat": "READ {{instance}}",
           "range": true,
@@ -614,7 +593,7 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "-sum(rate(node_disk_written_bytes_total{group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance)",
+          "expr": "-sum(rate(node_disk_written_bytes_total{group=~\"prd\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "hide": false,
           "intervalFactor": 2,
           "legendFormat": "WRITE {{instance}}",
@@ -623,7 +602,16 @@
           "step": 600
         }
       ],
-      "title": "硬碟使用量",
+      "title": "Production - 硬碟使用量",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -673,8 +661,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -743,9 +730,9 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_receive_bytes_total{id=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance)",
+          "expr": "sum(rate(container_network_receive_bytes_total{id=\"/\", group=~\"prd\", instance=~\"$instance\"}[$interval])) by (instance)",
           "intervalFactor": 2,
-          "legendFormat": "RECEIVED {{instance}}",
+          "legendFormat": "IN {{instance}}",
           "range": true,
           "refId": "A",
           "step": 600
@@ -756,16 +743,25 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "- sum(rate(container_network_transmit_bytes_total{id=\"/\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance)",
+          "expr": "- sum(rate(container_network_transmit_bytes_total{id=\"/\", group=~\"prd\", instance=~\"$instance\"}[$interval])) by (instance)",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "SENT {{instance}}",
+          "legendFormat": "OUT  {{instance}}",
           "range": true,
           "refId": "B",
           "step": 600
         }
       ],
-      "title": "網路使用量",
+      "title": "Production - 網路使用量",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -776,9 +772,9 @@
         "x": 0,
         "y": 41
       },
-      "id": 42,
+      "id": 44,
       "panels": [],
-      "title": "Containers",
+      "title": "Development",
       "type": "row"
     },
     {
@@ -808,7 +804,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 2,
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -824,12 +820,12 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -839,137 +835,49 @@
           },
           "unit": "percent"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#BA43A9",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 24,
         "x": 0,
         "y": 42
       },
-      "id": 9,
+      "id": 47,
       "options": {
         "legend": {
           "calcs": [],
-          "displayMode": "table",
+          "displayMode": "list",
           "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
-        },
-        "tooltip": {
-          "maxHeight": 600,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{name=~\"^monitor.*\", name!=\"\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name) * 100",
-          "hide": true,
-          "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
-          "range": true,
-          "refId": "A",
-          "step": 240
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "expr": "sum(rate(container_cpu_usage_seconds_total{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name) * 100",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "{{instance}}-{{name}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "容器 CPU 使用率",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PB01748D44C4D79F9"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "percent"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 9,
-        "w": 24,
-        "x": 0,
-        "y": 51
-      },
-      "id": 39,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
+          "showLegend": true
         },
         "tooltip": {
           "maxHeight": 600,
@@ -985,172 +893,29 @@
           },
           "editorMode": "code",
           "exemplar": false,
-          "expr": "100 * (container_memory_usage_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / on(instance) group_left node_memory_MemTotal_bytes)",
-          "hide": true,
-          "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
-          "range": true,
-          "refId": "A",
-          "step": 240
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "expr": "100 * (\r\n  sum(container_memory_usage_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"})\r\n  by (name, instance)\r\n  /\r\n  sum(clamp_min(container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}, 1))\r\n  by (name, instance)\r\n) AND\r\nsum(\r\n  (container_spec_memory_limit_bytes{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"} > 0)) by (instance, name)\r\n",
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", group=~\"dev-01\", instance=~\"$instance\"}[$__interval])) * 100)",
+          "format": "time_series",
           "hide": false,
           "instant": false,
-          "legendFormat": "{{instance}}-{{name}}",
-          "range": true,
-          "refId": "B"
-        }
-      ],
-      "title": "容器記憶體使用率",
-      "type": "timeseries"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "PB01748D44C4D79F9"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "palette-classic"
-          },
-          "custom": {
-            "axisBorderShow": false,
-            "axisCenteredZero": false,
-            "axisColorMode": "text",
-            "axisLabel": "",
-            "axisPlacement": "auto",
-            "barAlignment": 0,
-            "drawStyle": "line",
-            "fillOpacity": 10,
-            "gradientMode": "none",
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "insertNulls": false,
-            "lineInterpolation": "linear",
-            "lineWidth": 2,
-            "pointSize": 5,
-            "scaleDistribution": {
-              "type": "linear"
-            },
-            "showPoints": "never",
-            "spanNulls": false,
-            "stacking": {
-              "group": "A",
-              "mode": "none"
-            },
-            "thresholdsStyle": {
-              "mode": "off"
-            }
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
-              }
-            ]
-          },
-          "unit": "bytes"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 24,
-        "x": 0,
-        "y": 60
-      },
-      "id": 44,
-      "options": {
-        "legend": {
-          "calcs": [],
-          "displayMode": "table",
-          "placement": "right",
-          "showLegend": true,
-          "sortBy": "Name",
-          "sortDesc": false
-        },
-        "tooltip": {
-          "maxHeight": 600,
-          "mode": "multi",
-          "sort": "none"
-        }
-      },
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "sum by (name, instance) (\r\n  rate(container_fs_reads_bytes_total{\r\n    name!=\"\", \r\n    name!~\"^monitor_.*\", \r\n    group=~\"$servergroup\", \r\n    instance=~\"$instance\"\r\n  }[$__interval])\r\n)\r\n",
-          "hide": false,
+          "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "READ {{instance}}-{{name}}",
-          "range": true,
-          "refId": "A",
-          "step": 240
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "expr": "sum by (name, instance) (\r\n  -rate(container_fs_reads_bytes_total{\r\n    name!=\"\", \r\n    name!~\"^monitor_.*\", \r\n    group=~\"$servergroup\", \r\n    instance=~\"$instance\"\r\n  }[$__interval])\r\n)\r\n",
-          "hide": false,
-          "instant": false,
-          "legendFormat": "WRITE {{instance}}-{{name}}",
-          "range": true,
-          "refId": "B"
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "exemplar": true,
-          "expr": "container_fs_reads_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
-          "hide": true,
-          "intervalFactor": 2,
-          "legendFormat": "READ EXACT {{instance}}-{{name}}",
+          "legendFormat": "{{instance}}",
+          "metric": "",
           "range": true,
           "refId": "C",
-          "step": 240
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "expr": "-container_fs_writes_bytes_total{name!=\"\", name!~\"^monitor_.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
-          "hide": true,
-          "instant": false,
-          "legendFormat": "WRITE EXACT {{instance}}-{{name}}",
-          "range": true,
-          "refId": "D"
+          "step": 600
         }
       ],
-      "title": "容器硬碟使用量",
+      "title": "Development - CPU 使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -1180,7 +945,10 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 2,
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -1196,12 +964,12 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1211,15 +979,321 @@
           },
           "unit": "percent"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "54.150.247.132:8080"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 68
+        "y": 50
       },
-      "id": 40,
+      "id": 49,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{group=~\"dev-01\", instance=~\"$instance\"}) by (instance) / sum(node_memory_MemTotal_bytes{group=~\"dev-01\", instance=~\"$instance\"}) by (instance))",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}}",
+          "metric": "",
+          "range": true,
+          "refId": "C",
+          "step": 600
+        }
+      ],
+      "title": "Development - 記憶體使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PB01748D44C4D79F9"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "54.150.247.132:8080"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 58
+      },
+      "id": 50,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "100 * (sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"dev-01\", instance=~\"$instance\"}) by (instance, mountpoint) - sum(node_filesystem_free_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"dev-01\", instance=~\"$instance\"}) by (instance, mountpoint)) / sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"dev-01\", instance=~\"$instance\"}) by (instance, mountpoint)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}} - {{mountpoint}}",
+          "metric": "",
+          "range": true,
+          "refId": "C",
+          "step": 600
+        }
+      ],
+      "title": "Development - 硬碟使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+(.*)",
+            "renamePattern": "$1$2"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PB01748D44C4D79F9"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SENT"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 66
+      },
+      "id": 52,
       "options": {
         "legend": {
           "calcs": [],
@@ -1242,13 +1316,12 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "100 * container_fs_usage_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"} / container_fs_limit_bytes{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}",
-          "hide": true,
+          "expr": "sum(rate(node_disk_read_bytes_total{group=~\"dev-01\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
+          "legendFormat": "READ {{instance}}",
           "range": true,
           "refId": "A",
-          "step": 240
+          "step": 600
         },
         {
           "datasource": {
@@ -1256,16 +1329,25 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "100 * sum(container_fs_usage_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, name)\r\n/\r\nsum(container_fs_limit_bytes{name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}) by (instance, name)\r\n",
+          "expr": "-sum(rate(node_disk_written_bytes_total{group=~\"dev-01\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
+          "legendFormat": "WRITE {{instance}}",
           "range": true,
           "refId": "B",
-          "step": 240
+          "step": 600
         }
       ],
-      "title": "容器硬碟使用率",
+      "title": "Development - 硬碟使用量",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -1295,7 +1377,7 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 2,
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -1315,8 +1397,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1324,21 +1405,213 @@
               }
             ]
           },
-          "unit": "Bps"
+          "unit": "bytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SENT"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 76
+        "y": 74
       },
-      "id": 8,
+      "id": 55,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_network_receive_bytes_total{id=\"/\", group=~\"dev-01\", instance=~\"$instance\"}[$interval])) by (instance)",
+          "intervalFactor": 2,
+          "legendFormat": "IN {{instance}}",
+          "range": true,
+          "refId": "A",
+          "step": 600
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "- sum(rate(container_network_transmit_bytes_total{id=\"/\", group=~\"dev-01\", instance=~\"$instance\"}[$interval])) by (instance)",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "OUT  {{instance}}",
+          "range": true,
+          "refId": "B",
+          "step": 600
+        }
+      ],
+      "title": "Development - 網路使用量",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 82
+      },
+      "id": 45,
+      "panels": [],
+      "title": "Database",
+      "type": "row"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PB01748D44C4D79F9"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Time"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "#BA43A9",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 83
+      },
+      "id": 46,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
           "placement": "right",
           "showLegend": true
         },
@@ -1355,30 +1628,30 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_receive_bytes_total{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$__interval])) by (instance, name)",
-          "hide": true,
-          "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
-          "range": true,
-          "refId": "A",
-          "step": 240
-        },
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "PB01748D44C4D79F9"
-          },
-          "editorMode": "code",
-          "expr": "sum by (instance, name) (\r\n  rate(container_network_receive_bytes_total{\r\n    name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"\r\n  }[$__interval])\r\n)",
+          "exemplar": false,
+          "expr": "100 - (avg by (instance) (rate(node_cpu_seconds_total{mode=\"idle\", group=~\"db-01\", instance=~\"$instance\"}[$__interval])) * 100)",
+          "format": "time_series",
           "hide": false,
+          "instant": false,
+          "interval": "",
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
+          "legendFormat": "{{instance}}",
+          "metric": "",
           "range": true,
-          "refId": "B",
-          "step": 240
+          "refId": "C",
+          "step": 600
         }
       ],
-      "title": "容器網路下載量",
+      "title": "Database - CPU 使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     },
     {
@@ -1408,7 +1681,289 @@
             },
             "insertNulls": false,
             "lineInterpolation": "linear",
-            "lineWidth": 2,
+            "lineStyle": {
+              "fill": "solid"
+            },
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "54.150.247.132:8080"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 91
+      },
+      "id": 48,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "100 * (1 - sum(node_memory_MemAvailable_bytes{group=~\"db-01\", instance=~\"$instance\"}) by (instance) / sum(node_memory_MemTotal_bytes{group=~\"db-01\", instance=~\"$instance\"}) by (instance))",
+          "hide": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}}",
+          "metric": "",
+          "range": true,
+          "refId": "C",
+          "step": 600
+        }
+      ],
+      "title": "Database - 記憶體使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PB01748D44C4D79F9"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "max": 100,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "percent"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "54.150.247.132:8080"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "super-light-green",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 99
+      },
+      "id": 51,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "right",
+          "showLegend": true
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "100 * (sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"db-01\", instance=~\"$instance\"}) by (instance, mountpoint) - sum(node_filesystem_free_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"db-01\", instance=~\"$instance\"}) by (instance, mountpoint)) / sum(node_filesystem_size_bytes{mountpoint=~\"^/($|mnt.*)\", group=~\"db-01\", instance=~\"$instance\"}) by (instance, mountpoint)",
+          "format": "time_series",
+          "hide": false,
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 2,
+          "legendFormat": "{{instance}} - {{mountpoint}}",
+          "metric": "",
+          "range": true,
+          "refId": "C",
+          "step": 600
+        }
+      ],
+      "title": "Database - 硬碟使用率",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+(.*)",
+            "renamePattern": "$1$2"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PB01748D44C4D79F9"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
             "pointSize": 5,
             "scaleDistribution": {
               "type": "linear"
@@ -1428,8 +1983,7 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
-                "value": null
+                "color": "green"
               },
               {
                 "color": "red",
@@ -1437,23 +1991,53 @@
               }
             ]
           },
-          "unit": "Bps"
+          "unit": "bytes"
         },
-        "overrides": []
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SENT"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
       },
       "gridPos": {
-        "h": 9,
+        "h": 8,
         "w": 24,
         "x": 0,
-        "y": 85
+        "y": 107
       },
-      "id": 36,
+      "id": 53,
       "options": {
         "legend": {
           "calcs": [],
           "displayMode": "table",
           "placement": "right",
-          "showLegend": true
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
         },
         "tooltip": {
           "maxHeight": 600,
@@ -1468,13 +2052,12 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum(rate(container_network_transmit_bytes_total{name=~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"}[$interval])) by (instance, name)",
-          "hide": true,
+          "expr": "sum(rate(node_disk_read_bytes_total{group=~\"db-01\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
+          "legendFormat": "READ {{instance}}",
           "range": true,
           "refId": "A",
-          "step": 240
+          "step": 600
         },
         {
           "datasource": {
@@ -1482,16 +2065,175 @@
             "uid": "PB01748D44C4D79F9"
           },
           "editorMode": "code",
-          "expr": "sum by (instance, name) (\r\n  rate(container_network_transmit_bytes_total{\r\n    name!=\"\", name!~\"^monitor.*\", group=~\"$servergroup\", instance=~\"$instance\"\r\n  }[$__interval])\r\n)",
+          "expr": "-sum(rate(node_disk_written_bytes_total{group=~\"db-01\", instance=~\"$instance\"}[$__interval])) by (instance)",
           "hide": false,
           "intervalFactor": 2,
-          "legendFormat": "{{instance}}-{{name}}",
+          "legendFormat": "WRITE {{instance}}",
           "range": true,
           "refId": "B",
-          "step": 240
+          "step": 600
         }
       ],
-      "title": "容器網路上傳量",
+      "title": "Database - 硬碟使用量",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "PB01748D44C4D79F9"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 10,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "never",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green"
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          },
+          "unit": "bytes"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "SENT"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "fixedColor": "orange",
+                  "mode": "fixed"
+                }
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byType",
+              "options": "time"
+            },
+            "properties": [
+              {
+                "id": "custom.axisPlacement",
+                "value": "auto"
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 115
+      },
+      "id": 54,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "table",
+          "placement": "right",
+          "showLegend": true,
+          "sortBy": "Name",
+          "sortDesc": false
+        },
+        "tooltip": {
+          "maxHeight": 600,
+          "mode": "multi",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "sum(rate(container_network_receive_bytes_total{id=\"/\", group=~\"db-01\", instance=~\"$instance\"}[$interval])) by (instance)",
+          "intervalFactor": 2,
+          "legendFormat": "IN {{instance}}",
+          "range": true,
+          "refId": "A",
+          "step": 600
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PB01748D44C4D79F9"
+          },
+          "editorMode": "code",
+          "expr": "- sum(rate(container_network_transmit_bytes_total{id=\"/\", group=~\"db-01\", instance=~\"$instance\"}[$interval])) by (instance)",
+          "hide": false,
+          "intervalFactor": 2,
+          "legendFormat": "OUT  {{instance}}",
+          "range": true,
+          "refId": "B",
+          "step": 600
+        }
+      ],
+      "title": "Database - 網路使用量",
+      "transformations": [
+        {
+          "id": "renameByRegex",
+          "options": {
+            "regex": "(.+):\\d+",
+            "renamePattern": "$1"
+          }
+        }
+      ],
       "type": "timeseries"
     }
   ],
@@ -1505,10 +2247,10 @@
         "current": {
           "selected": true,
           "text": [
-            "prd"
+            "All"
           ],
           "value": [
-            "prd"
+            "$__all"
           ]
         },
         "datasource": {
@@ -1699,8 +2441,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "[FTT] General",
-  "uid": "cel9ij7o23ev4a",
-  "version": 2,
+  "title": "[FTT] 伺服器執行情況報表",
+  "uid": "aemb9gd5hjabkc",
+  "version": 14,
   "weekStart": ""
 }
