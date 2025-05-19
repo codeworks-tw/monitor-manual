@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
+
 <head>
   <meta charset="UTF-8">
   <title>{{ year }} 年 {{ month }} 月 系統監控月報表</title>
@@ -11,18 +12,34 @@
       color: #333;
       font-size: 14px;
     }
+
     h1 {
       text-align: center;
       font-size: 20px;
       margin-bottom: 1rem;
     }
+
+    h1.title {
+      margin: 0px 0px 30px;
+    }
+
+    .logo {
+      max-width: 35px;
+    }
+
+    .host span,
+    .host .logo {
+      vertical-align: middle;
+    }
+
     .section {
       background: white;
       padding: 1rem;
       margin-bottom: 1rem;
       border-radius: 6px;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
     }
+
     h2 {
       border-left: 4px solid #007bff;
       padding-left: 0.4rem;
@@ -30,27 +47,47 @@
       color: #007bff;
       margin: 0.2rem 0 0.4rem;
     }
+
+    h3 {
+      margin-bottom: 5px;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 0.3rem;
     }
-    th, td {
+
+    th,
+    td {
       border-bottom: 1px solid #ddd;
       padding: 0.4rem;
       text-align: left;
     }
+
     th {
       background-color: #f7f7f7;
     }
+
     p {
       margin: 0.2rem 0;
     }
   </style>
 </head>
+
 <body>
 
-  <h1>{{ year }} 年 {{ month }} 月 系統監控月報表</h1>
+  <h1 class="title">
+    <div class="host">
+      <img class="logo"
+        src="data:image/png;base64,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"
+        alt="" />
+      <span>翔勤科技有限公司</span>
+    </div>
+    {{ year }} 年 {{ month }} 月 系統監控月報表
+    <br />
+    {{ customer_name }}
+  </h1>
 
   <div class="section">
     <h2>1. 維運事項紀錄</h2>
@@ -76,15 +113,22 @@
 
   <div class="section">
     <h2>2. 流量統計</h2>
-    <p>總上傳量：<strong>{{ total_upload_size }}</strong></p>
-    <p>總下載量：<strong>{{ total_download_size }}</strong></p>
+    {% for instance in instance_details %}
+      <h3>{{ instance.name }}</h3>
+      <p>&numsp; 總上傳量：<strong>{{ instance.total_upload_size }}</strong></p>
+      <p>&numsp; 總下載量：<strong>{{ instance.total_download_size }}</strong></p>
+    {% endfor %}
   </div>
 
   <div class="section">
-    <h2>3. 主機異常紀錄</h2>
-    <p>異常次數：<strong>{{ alert_count }} 次</strong></p>
-    <p>妥善率：<strong>{{ availability_rate }}%</strong></p>
+    <h2>3. 主機運行紀錄</h2>
+    {% for instance in instance_details %}
+      <h3>{{ instance.name }}</h3>
+      <p>&numsp; 負載高峰次數：<strong>{{ instance.alert_count }} 次</strong></p>
+      <p>&numsp; 妥善率：<strong>{{ instance.availability_rate }}%</strong></p>
+    {% endfor %}
   </div>
 
 </body>
+
 </html>

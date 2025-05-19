@@ -1,6 +1,6 @@
 # Standard Library Imports
 from constants import *
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
@@ -13,6 +13,8 @@ class ReportConfig:
     dashboard_uid: str
     year: int = datetime.now().year
     month: int = datetime.now().month
+
+    summary_instances: List[Dict[str, Any]] = field(default_factory=list)
 
     report_from: Optional[str] = None
     report_to: Optional[str] = None
@@ -36,7 +38,7 @@ class ReportConfig:
         return self.email_template_data.get('customer_name', '') if self.email_template_data else ''
 
     @classmethod
-    def from_request(cls, request) -> 'ReportConfig':
+    def from_request(self, request) -> 'ReportConfig':
         """Create ReportConfig from request parameters."""
         # Get request data
         request_json = request.get_json()
@@ -77,10 +79,11 @@ class ReportConfig:
             email_template_data['year'] = year
             email_template_data['month'] = month
 
-        return cls(
+        return self(
             dashboard_uid=request_json.get("dashboard_uid"),
             year=year,
             month=month,
+            summary_instances=request_json.get('summary_instances'),
             report_from=request_json.get("report_from", str(start_ts)),
             report_to=request_json.get("report_to", str(end_ts)),
             report_servergroup=request_json.get("report_servergroup", DEFAULT_SERVERGROUP),
@@ -105,5 +108,8 @@ class ReportConfig:
 
         if not 1 <= self.month <= 12:
             errors.append("month must be between 1 and 12")
+
+        if not self.summary_instances or len(self.summary_instances) == 0:
+            errors.append("summary_instances cannot be empty")
 
         return errors

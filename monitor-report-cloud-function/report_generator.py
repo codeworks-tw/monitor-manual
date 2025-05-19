@@ -13,7 +13,7 @@ from compute_engine import ComputeEngineInstance
 from report_config import ReportConfig
 from constants import *
 
-
+@utils.timer
 def generate_maintenance_summary_report(config: ReportConfig):
     """Generate HTML summary report and convert it to PDF.
 
@@ -30,26 +30,29 @@ def generate_maintenance_summary_report(config: ReportConfig):
     customer_name = config.customer_name
     spreadsheet_id = config.spreadsheet_id
     spreadsheet_tab_name = config.spreadsheet_tab_name
+    summary_instances = config.summary_instances
     # Setup Jinja2 environment
     # Update the path to the current directory's parent directory for templates
     template_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates')
     env = Environment(loader=FileSystemLoader(template_dir))
     template = env.get_template('maintenance_summary.html')
 
-    (table_headers, table_data, total_upload_size, total_download_size,
-     alert_count, availability_rate) = utils.build_template_data(dashboard_uid, year, month,
-                                                                 spreadsheet_id,
-                                                                 spreadsheet_tab_name)
-
+    (table_headers, table_data, instance_details) = utils.build_template_data(
+        dashboard_uid=dashboard_uid,
+        year=year,
+        month=month,
+        summary_instances=summary_instances,
+        spreadsheet_id=spreadsheet_id,
+        spreadsheet_tab_name=spreadsheet_tab_name
+    )
     # Render template with data
     html_content = template.render(year=year,
                                    month=month,
                                    table_headers=table_headers,
                                    table_data=table_data,
-                                   total_upload_size=total_upload_size,
-                                   total_download_size=total_download_size,
-                                   alert_count=alert_count,
-                                   availability_rate=availability_rate)
+                                   customer_name=customer_name,
+                                   instance_details=instance_details
+                                   )
 
     # Save rendered HTML to a file
     output_html_filepath = os.path.join(template_dir, 'maintenance_summary_output.html')
@@ -86,7 +89,7 @@ def generate_maintenance_summary_report(config: ReportConfig):
     except Exception as e:
         raise (f"Error converting HTML to PDF: {str(e)}")
 
-
+@utils.timer
 def generate_monitor_report(config: ReportConfig) -> str:
     dashboard_uid = config.dashboard_uid
     year = config.year

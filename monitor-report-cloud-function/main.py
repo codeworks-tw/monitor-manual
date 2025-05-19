@@ -38,7 +38,6 @@ def main(request):
         maintenance_summary_report = generate_maintenance_summary_report(config)
         monitor_report = generate_monitor_report(config)
 
-        print(maintenance_summary_report, monitor_report)
         # Send email if receivers are specified
         if config.email_receivers:
             utils.send_email(
