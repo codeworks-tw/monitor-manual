@@ -26,4 +26,6 @@ GRAFANA_BASE_URL = os.getenv('GRAFANA_BASE_URL')
 
 GRAFANA_REPORT_ENDPOINT = "/api/plugins/mahendrapaipuri-dashboardreporter-app/resources/report"
 
+GRAFANA_ALERTING_STATE_ALERTING = "Alerting"
+
 UTC_PLUS_8 = timezone(timedelta(hours=8))

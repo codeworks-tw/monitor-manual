@@ -1,10 +1,11 @@
 # Standard Library Imports
-from datetime import datetime, timezone
 import os
 import base64
 import json
-from typing import Any, Callable
+import re
 import time
+from datetime import datetime, timezone
+from typing import Any, Callable
 
 # Third-Party Library Imports
 import requests
@@ -84,10 +85,10 @@ def query_prometheus(query: str, time: float):
     return result
 
 
-def get_grafana_annotations(dashboardUID: str = 'cel9ij7o23ev4a'):
+def get_grafana_annotations(dashboardUID: str = 'cel9ij7o23ev4a', type: str = 'alert'):
     headers = {"Authorization": f"Bearer {GRAFANA_TOKEN}"}
     request_url = (f"{GRAFANA_BASE_URL}/api/annotations"
-                   f"?type=alert"
+                   f"?type={type}"
                    f"&dashboardUID={dashboardUID}")
     response = requests.get(request_url, headers=headers)
     response.raise_for_status()
@@ -202,25 +203,42 @@ def build_template_data(
         spreadsheet_tab_name: str):
 
     header_row, data_rows = get_spreadsheet_tab_rows(spreadsheet_id, spreadsheet_tab_name)
-    table_headers = header_row[:3] + header_row[4:]
-    table_data = [row[:3] + row[4:] for row in data_rows]
+    table_headers = header_row[:2] + header_row[4:]
+    table_data = [row[:2] + row[4:] for row in data_rows]
+    instance_details = []
 
     # Get timestamp of the first day of the next month as query time
     timestamp = round(
         get_first_day_timestamp_of_next_month(year, month).timestamp(), 0)
 
-    instance_details = [get_network_usage_and_availability(dashboard_uid, timestamp, instance) for instance in summary_instances]
+    # Filtered history alerts whose new state is Alerting and convert json details from text, then get number of alerts per instance
+    alerts = get_grafana_annotations(dashboard_uid)
+    fired_alerts_details = [alert for alert in alerts if alert["newState"] == GRAFANA_ALERTING_STATE_ALERTING]
+
+    for alert in fired_alerts_details:
+        jsonDetails = extract_json_from_text(alert["text"])
+        alert["details"] = jsonDetails
+
+    for instance in summary_instances:
+        details = get_instance_details(instance, timestamp)
+
+        # nodata errors that text content does not contain instance info will be filtered out
+        details["alert_count"] = len([
+            alert for alert in fired_alerts_details
+            if alert.get("details", {}).get("instance") == instance["source"]
+        ])
+
+        instance_details.append(details)
 
     return table_headers, table_data, instance_details
 
 
-def get_network_usage_and_availability(dashboard_uid, timestamp, instance) -> dict[str, Any]:
+def get_instance_details(instance, timestamp) -> dict[str, Any]:
     if not instance['source']:
         return None
 
     total_upload_size = "0 GB"
     total_download_size = "0 GB"
-    alert_count = 1
     availability_rate = 100
 
     total_upload_result = query_prometheus(
@@ -249,16 +267,30 @@ def get_network_usage_and_availability(dashboard_uid, timestamp, instance) -> di
             else round(float(availability_rate_val), 2)
 
     # Calculate alert count by filtering alerts where the state is 'Alerting'
-    alerts = get_grafana_annotations(dashboard_uid)
-    alert_count = len([alert for alert in alerts if alert.get('newState') == 'Alerting'])
+    # alerts = get_grafana_annotations(dashboard_uid)
+    # alert_count = len([alert for alert in alerts if alert.get('newState') == 'Alerting'])
 
     return {
         **instance,
         "total_upload_size": total_upload_size,
         "total_download_size": total_download_size,
-        "alert_count": alert_count,
         "availability_rate": availability_rate
     }
+
+
+def extract_json_from_text(text: str) -> dict[str, str]:
+    match = re.search(r"\{(.+?)\}", text)
+    if not match:
+        return None
+
+    kv_string = match.group(1)
+    try:
+        return {
+            key.strip(): value.strip()
+            for key, value in (pair.split("=", 1) for pair in kv_string.split(", "))
+        }
+    except ValueError:
+        return None  # Handle malformed input gracefully
 
 
 def download_report(
