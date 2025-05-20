@@ -20,6 +20,7 @@
   "fiscalYearStartMonth": 0,
   "gnetId": 893,
   "graphTooltip": 1,
+  "id": 11,
   "links": [],
   "panels": [
     {
@@ -78,6 +79,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -266,6 +268,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -395,6 +398,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -824,6 +828,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -938,6 +943,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1196,6 +1202,7 @@
             }
           },
           "mappings": [],
+          "max": 100,
           "thresholds": {
             "mode": "absolute",
             "steps": [
@@ -1505,10 +1512,10 @@
         "current": {
           "selected": true,
           "text": [
-            "prd"
+            "All"
           ],
           "value": [
-            "prd"
+            "$__all"
           ]
         },
         "datasource": {
@@ -1535,7 +1542,7 @@
       {
         "allValue": "",
         "current": {
-          "selected": true,
+          "selected": false,
           "text": [
             "All"
           ],
@@ -1699,8 +1706,8 @@
     ]
   },
   "timezone": "browser",
-  "title": "[FTT] General",
+  "title": "[NEW] General Dashboard",
   "uid": "cel9ij7o23ev4a",
-  "version": 2,
+  "version": 3,
   "weekStart": ""
 }
