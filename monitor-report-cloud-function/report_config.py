@@ -105,6 +105,8 @@ class ReportConfig:
             report_interval=request_json.get("report_interval", DEFAULT_INTERVAL),
             shutdown_instance=shutdown_instance,
             email_receivers=email_receivers,
+            email_cc=email_cc,
+            email_bcc=email_bcc,
             email_text_body=request_json.get("email_text_body"),
             email_subject=request_json.get("email_subject"),
             email_template_id=request_json.get("email_template_id"),
