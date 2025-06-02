@@ -25,6 +25,8 @@ class ReportConfig:
     shutdown_instance: bool = True
 
     email_receivers: List[str] = None
+    email_cc: List[str] = None
+    email_bcc: List[str] = None
     email_text_body: Optional[str] = None
     email_subject: Optional[str] = None
     email_template_id: str = None
@@ -61,6 +63,18 @@ class ReportConfig:
         if email_receivers:
             email_receivers = [
                 email.strip() for email in email_receivers if email.strip()
+            ]
+
+        email_cc = request_json.get("email_cc", [])
+        if email_cc:
+            email_cc = [
+                email.strip() for email in email_cc if email.strip()
+            ]
+
+        email_bcc = request_json.get("email_bcc", [])
+        if email_bcc:
+            email_bcc = [
+                email.strip() for email in email_bcc if email.strip()
             ]
 
         # Convert shutdown_instance to boolean

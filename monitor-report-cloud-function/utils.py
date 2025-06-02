@@ -329,26 +329,23 @@ def send_email(config: ReportConfig, attachment_paths=None):
         template_id (str, optional): Template ID for template-based emails
         template_data (dict, optional): Data to be used in the template
     """
-    receivers = config.email_receivers
-    text_body = config.email_text_body
-    subject = config.email_subject
-    template_id = config.email_template_id
-    template_data = config.email_template_data
 
     payload = {
         "sender": "report@codeworkstw.com",
-        "to": receivers,
+        "to": config.email_receivers,
+        "cc": config.email_cc,
+        "bcc": config.email_bcc
     }
 
     # Add template data if provided, otherwise add regular email data
-    if template_id:
-        payload["template_id"] = template_id
-        if template_data:
-            payload["template_data"] = template_data
+    if config.email_template_id:
+        payload["template_id"] = config.email_template_id
+        if config.email_template_data:
+            payload["template_data"] = config.email_template_data
     else:
         payload.update({
-            "subject": subject,
-            "text_body": text_body,
+            "subject": config.email_subject,
+            "text_body": config.email_text_body,
         })
 
     # Add attachment(s) if attachment_paths is provided
