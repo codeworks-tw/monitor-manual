@@ -112,7 +112,7 @@ class ReportConfig:
             email_template_id=request_json.get("email_template_id"),
             email_template_data=email_template_data,
             spreadsheet_id=request_json.get("spreadsheet_id", DEFAULT_SPREADSHEET_ID),
-            spreadsheet_tab_name=request_json.get("spreadsheet_tab_name", DEFAULT_SPREADSHEET_TAB_NAME),
+            spreadsheet_tab_name=request_json.get("spreadsheet_tab_name", f"{DEFAULT_SPREADSHEET_TAB_NAME_BASE} {year}-{month:02}"),
         )
 
     def validate(self) -> List[str]:

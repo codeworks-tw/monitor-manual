@@ -1,6 +1,5 @@
 import os
 from datetime import timezone, timedelta
-from dotenv import load_dotenv
 
 # VM Instance Configuration
 INSTANCE_NAME = "monitor-report-renderer-temp"
@@ -18,7 +17,7 @@ GCS_BUCKET = "cw-general"
 GCS_BASE_PATH = "monitor-report"
 
 DEFAULT_SPREADSHEET_ID = "1hsXE2yT9YHvEfnadTAgi7tZHvkTXlRfek-VuEvxmhb4"
-DEFAULT_SPREADSHEET_TAB_NAME = "維運紀錄"
+DEFAULT_SPREADSHEET_TAB_NAME_BASE = "維運紀錄"
 
 # External Service URLs
 PROMETHEUS_BASE_URL = os.getenv('PROMETHEUS_BASE_URL')

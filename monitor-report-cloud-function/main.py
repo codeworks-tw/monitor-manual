@@ -1,5 +1,6 @@
 # Third-Party Library Imports
 import functions_framework
+from dotenv import load_dotenv
 
 # Local Imports
 import utils
