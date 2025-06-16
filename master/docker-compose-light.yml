@@ -68,16 +68,17 @@ services:
     volumes:
       - ./certbot/webroot:/var/www/certbot
       - ./letsencrypt:/etc/letsencrypt
-    entrypoint: ""
+    entrypoint: ["certbot"]
     command: >
       certonly --webroot
       --webroot-path=/var/www/certbot
       --email linex1008@gmail.com
       --agree-tos
       --no-eff-email
+      --non-interactive
       -d monitor.codeworkstw.com
     network_mode: host
-    restart: "never"
+    restart: "no"
   
   ssl-renew:
     container_name: ssl-renew

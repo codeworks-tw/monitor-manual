@@ -1,6 +1,7 @@
 .htpasswd
 prometheus.yml
 letsencrypt
+certbot
 
 __pycache__/
 venv/
