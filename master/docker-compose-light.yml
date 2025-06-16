@@ -35,7 +35,6 @@ services:
       # image renderer plugin configurations
       - GF_RENDERING_SERVER_URL=http://10.0.0.0:8081/render
       - GF_RENDERING_CALLBACK_URL=http://10.0.0.0:3000/
-      - GF_LOG_FILTERS=rendering:debug
 
       # reporter plugin configurations
       - GF_FEATURE_TOGGLES_ENABLE=${GF_FEATURE_TOGGLES_ENABLE:-accessControlOnCall,idForwarding,externalServiceAccounts}
@@ -55,6 +54,7 @@ services:
     volumes:
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
       - ./letsencrypt:/etc/letsencrypt
+      - ./certbot/webroot:/var/www/certbot
     logging:
       driver: "json-file"
       options:
@@ -62,6 +62,38 @@ services:
         max-file: "3"
     network_mode: host
     restart: always
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/webroot:/var/www/certbot
+      - ./letsencrypt:/etc/letsencrypt
+    entrypoint: ""
+    command: >
+      certonly --webroot
+      --webroot-path=/var/www/certbot
+      --email linex1008@gmail.com
+      --agree-tos
+      --no-eff-email
+      -d monitor.codeworkstw.com
+    network_mode: host
+    restart: "never"
+  
+  ssl-renew:
+    container_name: ssl-renew
+    image: docker:cli
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: >
+      /bin/sh -c '
+        while true; do
+          echo "[Renew] Running ssl renew at $(date)";
+          docker start -a certbot &&
+          docker exec nginx nginx -s reload;
+          sleep 604800;
+        done
+      '
+    restart: unless-stopped
 
 # networks:
 #   default:    
